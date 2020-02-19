@@ -14,7 +14,7 @@ router.get('/Report', function (req, res, next) {
 
 /* GET feed page. */
 router.get('/feed', function (req, res, next) {
-  res.render('ReportFault');
+  res.render('feed');
 });
 
 module.exports = router;
