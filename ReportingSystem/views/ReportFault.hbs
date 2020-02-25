@@ -2,57 +2,36 @@
     <div class="container">
         <form id="Report">
             <div>
-                Descrpiption: <input type="textarea" id="Description" placeholder="Description"><br>
-                Room Number: <input type="text" id="RoomNo" placeholder="eg. AC101"><br>
-                building:
+                Building:
                 <select id="building">
                     <option value="Moffetts">Moffetts</option>
                     <option value="IT">IT</option>
-                    <option value="ReadingRoom">ReadingRoom</option>
                     <option value="Orbsen">Orbsen</option>
                     <option value="Concourse">Concourse</option>
-                </select>
-                <br>
+                </select><br>
+                Room Number: <input type="text" id="RoomNo" placeholder="eg. AC101"><br>
                 <!--Input for image, (future feature) <input type="file" accept="image/*" id="ImageUpload"><br>-->
-                <input type="button" id="submitReport" class="btn btn-primary" value="botton">
-
             </div>
           
         </form>
-          <button onclick="getLocation()">Add Location</button>
+        Description: <br>
+        <!--textarea which is still part of the Report form-->
+        <textarea id="description" rows="4" cols="50" name="comment" form="Report" placeholder="Enter Description here"></textarea>
+        <br>
+        <input type="button" id="submitReport" class="btn btn-primary" value="Submit Report">          
 </body>
+
 <script>
-
-    //Get users coords and saves in variables; longtitude & latitude
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-        } else {
-            x.innerHTML = "Geolocation is not supported by this browser.";
-        }
-    }
-    latitude=0;
-    longitude=0;
-    function showPosition(position) {
-
-        latitude = position.coords.latitude;
-        
-        longitude = position.coords.longitude;
-
-        console.log("longitude:  "+ longitude );
-        console.log("latitude: "+latitude);
-    }
-
-    //send post request with body containg data from #Report form
+    //send post request with body containg data from #Report form 
     $("#submitReport").click(function () {
         $.ajax({
             url: '/AddReport',
             type: 'post',
-            data: {'description':$('#Description').val(),'room_number': $('#RoomNo').val(),
-            'building': $('#building').children("option:selected").val(),'latitude': latitude,'longitude': longitude},
+            data: {'description':$('#description').val(),'room_number': $('#RoomNo').val(),
+            'building': $('#building').children("option:selected").val()},
             success: function (response) {
                 if (response != 0) {
-                    "report added!"
+                    alert("report added!");
                 } else {
                     alert('file not uploaded');
                 }
