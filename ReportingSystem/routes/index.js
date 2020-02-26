@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var validator = require('validator'); 
 var Report = require('../models/reports'); //import reports model using relative path
-var multer = require('multer');
+var multer = require('multer'); 
 
 //storage strategy 
 var storage = multer.diskStorage({
@@ -74,20 +75,31 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
     image_file_name: req.file.path,
   
   });
-  report.save(function (err, savedReport) {
-    if (err)
-      throw err;
-    res.json({ //Send response with saved details (for testing/debugging)
-      "id": savedReport._id,
-      "building": savedReport.building,
-      "Room Number": savedReport.room_number,
-      "description": savedReport.description,
-      "longitude": savedReport.longitude,
-      "latitude": savedReport.latitude,
-      "file name ": savedReport.image_file_name
+  /*Report is saved if description & room_number contains Alphanumeric characters only 
+  *  .replace argument removes all spaces from string before passing it to isAlphanumeric method.
+  *     otherwise isAlphanumeric() would return false for any filed with spaces.
+  */
+  if ((validator.isAlphanumeric(req.body.description.replace(/\s+/g,''))) && (validator.isAlphanumeric(req.body.room_number.replace(/\s+/g,''))))
+  {   
+    report.save(function (err, savedReport) {
+      if (err)
+        throw err;
+      res.json({ //Send response with saved details (for testing/debugging)
+        "id": savedReport._id,
+        "building": savedReport.building,
+        "Room Number": savedReport.room_number,
+        "description": savedReport.description,
+        "longitude": savedReport.longitude,
+        "latitude": savedReport.latitude,
+        "file name ": savedReport.image_file_name
+      });
     });
-  });
+  }else {
+      res.json({"Error":  "Only letters and Numbers allowed"}) 
+  }
 });
+
+
 
 // router.post('/AddReport', function (req, res, next) {
 
