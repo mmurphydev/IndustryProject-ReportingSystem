@@ -1,41 +1,57 @@
 <body>
-    <div class="container">
-        <form id="Report">
-            <div>
-                Building:
+    <div class="container">  
+    <form id="Report" enctype="multipart/form-data">
+      <div>
+        Building:
                 <select id="building">
                     <option value="Moffetts">Moffetts</option>
                     <option value="IT">IT</option>
                     <option value="Orbsen">Orbsen</option>
                     <option value="Concourse">Concourse</option>
                 </select><br>
-                Room Number: <input type="text" id="RoomNo" placeholder="eg. AC101"><br>
-                <!--Input for image, (future feature) <input type="file" accept="image/*" id="ImageUpload"><br>-->
-            </div>
-          
-        </form>
-        Description: <br>
-        <!--textarea which is still part of the Report form-->
-        <textarea id="description" rows="4" cols="50" name="comment" form="Report" placeholder="Enter Description here"></textarea>
+        Room Number: 
+                <input type="text" id="roomNo" placeholder="eg. AC101"><br>
         <br>
-        <input type="button" id="submitReport" class="btn btn-primary" value="Submit Report">          
+        <!--Accepts image from any device, taken with camera or selected from saved images/documents-->
+        <input type="file" accept="image/*" id="ImageUpload"><br>
+      </div>
+    </form>
+    Description: <br>
+        <!--textarea which is still part of the Report form-->
+        <textarea id="Description" rows="4" cols="50" name="comment" form="Report" 
+        placeholder="Enter Description here"></textarea>
+        <br>
+        <input type="button" id="submitReport" class="btn btn-primary" value="Submit Report">    
 </body>
 
 <script>
-    //send post request with body containg data from #Report form 
+
     $("#submitReport").click(function () {
+
+        var fd = new FormData();
+        var files = $('#ImageUpload')[0].files[0]; //sotres users file in a variable
+
+        //add values from Report form and image to FormData 
+        fd.append('ImageUpload', files);
+        fd.append('description', $('#description').val());
+        fd.append('room_number', $('#roomNo').val());
+        fd.append('building', $('#building').children("option:selected").val());
+        
+        //send post request with body containg ForData
         $.ajax({
             url: '/AddReport',
             type: 'post',
-            data: {'description':$('#description').val(),'room_number': $('#RoomNo').val(),
-            'building': $('#building').children("option:selected").val()},
+            data: fd,
+            contentType: false,
+            processData: false,
             success: function (response) {
                 if (response != 0) {
-                    alert("report added!");
+                alert("report added!");
                 } else {
-                    alert('file not uploaded');
+                alert('file not uploaded');
                 }
             },
         });
     });
+
 </script>

@@ -54,10 +54,11 @@ router.get('/feed', function (req, res, next) {
 */
 
 router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next) {
+  
   console.log("logging file" + req.file.filename);
-
+ 
   console.log(req.body);
-  console.log("logging path"+ req.body.path);
+  console.log("logging path "+ req.body.path);
   console.log("loggin building: " + req.body.building);
   console.log("loggin description: " + req.body.description);
   console.log("loggin room_number: " + req.body.room_number);
@@ -70,8 +71,8 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
     description: req.body.description,
     building: req.body.building,
     room_number: req.body.room_number,
-    longitude: req.body.longitude,
-    latitude: req.body.latitude,
+    // longitude: req.body.longitude,
+    // latitude: req.body.latitude,
     image_file_name: req.file.path,
   
   });
