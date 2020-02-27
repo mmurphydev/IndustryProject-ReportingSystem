@@ -127,5 +127,25 @@ router.get('/getTodaysReports', function (req, res, next) {
   });
 });
 
+/*Get all OPEN Reports for IT building
+* sorted by votes (desc) then date(oldest first)
+*/
+router.get('/getAllUnresolvedITReports', function (req, res, next) {
+  Report.find({
+    $and: [{ "building": { $eq: 'IT' } }, { "status": { $eq: true } }
+    ]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date 
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });  
+    res.json(reports);
+  });
+});
+
 
 module.exports = router;
