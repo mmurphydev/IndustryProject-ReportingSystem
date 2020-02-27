@@ -66,6 +66,7 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
   console.log("long position: " + req.body.longitude);
   console.log(req.file.filename)
 
+
   //create new report with values from body
   report = new Report({
     description: req.body.description,
@@ -100,38 +101,31 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
   }
 });
 
+/*Get Reports <24hours old, with status=true
+* sorted by votes (desc) then date(oldest first)
+*/
+router.get('/getTodaysReports', function (req, res, next) {
+  Report.find({
+    $and: [
+      {
+        "date_created":
+        {
+          $gte: new Date((new Date().getTime() - (24 * 60 * 60 * 1000)))
+        }
+      },
+      { "status": { $eq: true } }]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });
+    res.json(reports);
+  });
+});
 
-
-// router.post('/AddReport', function (req, res, next) {
-
-//   console.log(req.body);
-//   console.log("loggin body: " + req.body.building);
-//   console.log("loggin description: " + req.body.description);
-//   console.log("loggin room_number: " + req.body.room_number);
-//   console.log("lat postionn: " + req.body.latitude);
-//   console.log("long position: " + req.body.longitude);
-
-//   //create new report with values from body
-//   report = new Report({
-//     description: req.body.description,
-//     building: req.body.building,
-//     room_number: req.body.room_number,
-//     longitude: req.body.longitude,
-//     latitude: req.body.latitude,
-//   });
-
-//   report.save(function (err, savedReport) {
-//     if (err)
-//       throw err;
-//     res.json({ //Send response with saved details (for testing/debugging)
-//       "id": savedReport._id,
-//       "building": savedReport.building,
-//       "Room Number": savedReport.room_number,
-//       "description": savedReport.description,
-//       "longitude": savedReport.longitude,
-//       "latitude": savedReport.latitude
-//     });
-//   });
-// });
 
 module.exports = router;
