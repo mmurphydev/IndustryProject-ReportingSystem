@@ -18,7 +18,7 @@ $(document).ready(
                 for (var i = 0; i < data.length; i++) 
                 {    //creates a new row for each Report and displays each attribute using HTML tags                    
                     posts+= " <div class='row text-white'><div class='col-sm-6'>"
-                    + "<img src= '/"+data[i].image_file_name + "' style='width: 150px; height: 250px'>"
+                    + "<img onclick= "+str+" name ='img' src= '/"+data[i].image_file_name  + "' style='width: 150px; height: 250px'>"
                     +"</div><div class='col-sm-6'>"+
                     "<p> Description: "+ data[i].description + "</p>"
                     + "<p>Building: "+data[i].building+"</p>"
@@ -38,4 +38,36 @@ $(document).ready(
        // setTimeout(getTodaysReports, 1000); // recursively calls getTodaysReports (comments are refreshed every 10 seconds)
     }
 
+    //Delets Report from DB
+    $("#todaysPosts").click(function (event){
+        /*splits name of target(button clicked) at every space, adding it to an array
+        Name consits of 1) Desired Action & 2) id of Report in DB  
+        */
+        var targetArray = event.target.name.split(" ");
+        //If true, sends delte request, passing id as param.
+        if(targetArray[0] == "delete"){
+            //alert("Disabled During Demo ");  //uncomment for demo + disable below
+            $.ajax({
+            url: '/deleteReport/' + targetArray[1],
+            type: 'DELETE',
+            success: function(result) {
+                getTodaysReports(); //reloads Reports
+                    }
+            });
+        }
+    });
+
+    //Changes status of Report to false 
+    $("#todaysPosts").click(function (event){
+        var targetArray = event.target.name.split(" ");
+        if(targetArray[0] == "changeStatus"){
+            $.ajax({
+            url: '/changeStatusFalse/' + targetArray[1],
+            type: 'PUT',
+            success: function(result) {
+                getTodaysReports();
+                    }
+            });
+        }
+    });
 });

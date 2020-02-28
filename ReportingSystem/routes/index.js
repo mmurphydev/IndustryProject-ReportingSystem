@@ -101,6 +101,30 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
   }
 });
 
+/* Delete report*/
+router.delete('/deleteReport/:id', function (req, res, next) {
+  console.log("delete api called");
+  Report.deleteOne({ _id: req.params.id }, function (err) {
+    if (err)
+      res.send(err);
+    res.json({ status: "commment with id" + req.params.id + " deleted" });
+  }
+  );
+});
+
+/*  c)  Change Status to fasle, put request*/
+router.put('/changeStatusFalse/:id', function (req, res, next) {
+  var id = req.params.id;
+  Report.updateOne({ _id: id }, { status: false }, function (err) {
+    if (err)
+      res.send(err);
+    res.json({ status: "Report Status Changed!" });
+  });
+});
+
+
+
+
 /*Get Reports <24hours old, with status=true
 * sorted by votes (desc) then date(oldest first)
 */
