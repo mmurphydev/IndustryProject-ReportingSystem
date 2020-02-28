@@ -20,8 +20,7 @@ var fileFilter = (req, file, cb) => {
   } else {
     cb(null, false); //ignores file and doesnt save it
   };
-
-
+  
 };
 
 //executes multer passig a configuration 
@@ -46,6 +45,11 @@ router.get('/Report', function (req, res, next) {
 /* GET feed page. */
 router.get('/feed', function (req, res, next) {
   res.render('feed');
+});
+
+/* GET Closed Feed page. */
+router.get('/feedClosed', function (req, res, next) {
+  res.render('feedClosed');
 });
 
 /*Adding Report to DB
@@ -122,6 +126,17 @@ router.put('/changeStatusFalse/:id', function (req, res, next) {
   });
 });
 
+/*  c)  Change Status to true, put request*/
+router.put('/changeStatusTrue/:id', function (req, res, next) {
+  var id = req.params.id;
+  Report.updateOne({ _id: id }, { status: true }, function (err) {
+    if (err)
+      res.send(err);
+    res.json({ status: "Report Status Changed!" });
+  });
+});
+
+
 
 
 
@@ -138,6 +153,33 @@ router.get('/getTodaysReports', function (req, res, next) {
         }
       },
       { "status": { $eq: true } }]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });
+    res.json(reports);
+  });
+});
+
+
+/*Get Closed Reports <24hours old, with status=false
+* sorted by votes (desc) then date(oldest first)
+*/
+router.get('/getTodaysClosedReports', function (req, res, next) {
+  Report.find({
+    $and: [
+      {
+        "date_created":
+        {
+          $gte: new Date((new Date().getTime() - (24 * 60 * 60 * 1000)))
+        }
+      },
+      { "status": { $eq: false } }]
   }, function (err, reports) {
     if (err)
       res.send(err);

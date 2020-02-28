@@ -6,11 +6,12 @@ $(document).ready(
      The response is an array of (Reports) in JSON format.
      Extract all the data in the array and add it to a String along with HTML,CSS,BootStrap
      Use Jquery to add the String variable to the element in the feed.hbs page.
-     */   
-    getTodaysReports();
-    function getTodaysReports() {			
+     */
+      
+    getTodaysClosedReports();
+    function getTodaysClosedReports() {			
         $.ajax({
-            url: '/getTodaysReports/',
+            url: '/getTodaysClosedReports/',
             type: 'GET',
             success: function (data) {
                 //console.log(data) //for testing 
@@ -51,7 +52,7 @@ $(document).ready(
             url: '/deleteReport/' + targetArray[1],
             type: 'DELETE',
             success: function(result) {
-                getTodaysReports(); //reloads Reports
+                getTodaysClosedReports(); //reloads Reports
                     }
             });
         }
@@ -62,10 +63,10 @@ $(document).ready(
         var targetArray = event.target.name.split(" ");
         if(targetArray[0] == "changeStatus"){
             $.ajax({
-            url: '/changeStatusFalse/' + targetArray[1],
+            url: '/changeStatusTrue/' + targetArray[1],
             type: 'PUT',
             success: function(result) {
-                getTodaysReports();
+                getTodaysClosedReports();
                     }
             });
         }
