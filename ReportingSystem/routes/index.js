@@ -116,7 +116,7 @@ router.delete('/deleteReport/:id', function (req, res, next) {
   );
 });
 
-/*  c)  Change Status to fasle, put request*/
+/* Change Status to fasle, put request*/
 router.put('/changeStatusFalse/:id', function (req, res, next) {
   var id = req.params.id;
   Report.updateOne({ _id: id }, { status: false }, function (err) {
@@ -126,7 +126,7 @@ router.put('/changeStatusFalse/:id', function (req, res, next) {
   });
 });
 
-/*  c)  Change Status to true, put request*/
+/* Change Status to true, put request*/
 router.put('/changeStatusTrue/:id', function (req, res, next) {
   var id = req.params.id;
   Report.updateOne({ _id: id }, { status: true }, function (err) {
@@ -136,6 +136,17 @@ router.put('/changeStatusTrue/:id', function (req, res, next) {
   });
 });
 
+/* Upvote similar versions 
+  increases votes field of Report by 1
+ */
+router.put('/upVote/:id', function (req, res, next) {
+  var id1 = req.params.id;
+  Report.updateOne({ _id: id1 }, { $inc: { votes: 1 } }, function (err) {
+    if (err)
+      res.send(err);
+    res.json({ votes: "Votes NumberChanged!" });
+  });
+});
 
 
 
