@@ -11,7 +11,7 @@ var reportsSchema = new Schema({
     longitude : {type : Number},
     latitude : {type : Number},
     date_created : {type: Date, default: new Date()},
-    up_votes: {type: Number, default : 0},
+    votes: {type: Number, default : 0},
     status : {type: Boolean, default : true},
 });
 module.exports = mongoose.model('Report',reportsSchema);
