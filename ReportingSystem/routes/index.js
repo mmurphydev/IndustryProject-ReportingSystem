@@ -52,6 +52,11 @@ router.get('/feedClosed', function (req, res, next) {
   res.render('feedClosed');
 });
 
+/* GET Closed Feed page. */
+router.get('/feedTest', function (req, res, next) {
+  res.render('feedTest');
+});
+
 /*Adding Report to DB
 * middleware specifies the nuber of files (1) 
 * and the name of the field that will hold the file to be parsed
@@ -147,8 +152,6 @@ router.put('/upVote/:id', function (req, res, next) {
     res.json({ votes: "Votes NumberChanged!" });
   });
 });
-
-
 
 
 /*Get Reports <24hours old, with status=true

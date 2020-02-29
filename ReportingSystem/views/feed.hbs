@@ -1,27 +1,133 @@
-<div class="row" style="text-align: center">
-    <!-- Reports less than 24hours old-->
-    <div class="col-md-4 text-white bg-dark">
-        <h1>Today</h1><br>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        
+        .navbarw {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        .navbarw a {
+            float: left;
+            font-size: 16px;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .dropdownw {
+            float: left;
+            overflow: hidden;
+        }
+
+        .dropdownw .dropbtnw {
+            font-size: 16px;
+            border: none;
+            outline: none;
+            color: white;
+            padding: 14px 16px;
+            background-color: inherit;
+            font-family: inherit;
+            margin: 0;
+        }
+
+        .navbarw a:hover,
+        .dropdownw:hover .dropbtnw {
+            background-color: red;
+        }
+
+        .dropdown-contentw {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown-contentw a {
+            float: none;
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+
+        .dropdown-contentw a:hover {
+            background-color: #ddd;
+        }
+
+        .dropdownw:hover .dropdown-contentw {
+            display: block;
+        }
+    </style>
+
+
+    <!--NavBar-->
+    <div class="navbarw">
+        <a href="/">Home</a>
+        <a href="/feed">Main Feed</a>
+        <a href="/Report">Add Report</a>
+        <!--DropDown with links to Feed of Open Reports Sorted by building-->
+        <div class="dropdownw">
+            <button class="dropbtnw">Open Building Reports
+                <i class="fa fa-caret-down"></i>
+            </button>
+
+            <div class="dropdown-contentw">
+                <a href="/feedOpenIT">IT</a>
+                <a href="/feedOpenMoffetts">Moffetts</a>
+                <a href="/feedOpenOrbsen#">Orbsen</a>
+                <a href="/feedOpenConcourse">Concourse</a>
+            </div>
+        </div>
+
+        <a href="/feedClosed">Closed Reports</a>
+
+        <!--DropDown with links to Feed of Closed Reports Sorted by building-->
+        <div class="dropdownw">
+            <button class="dropbtnw">Closed Building Reports
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-contentw">
+                <a href="/feedClosedIT">IT</a>
+                <a href="/feedClosedMoffetts">Moffetts</a>
+                <a href="/feedClosedOrbsen#">Orbsen</a>
+                <a href="/feedClosedConcourse">Concourse</a>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!--BootStrp grid with 3 colums of Reports-->
+    <div class="row" style="text-align: center">
+        <!-- Reports less than 24hours old-->
+        <div class="col-md-4 text-white bg-dark">
+            <h1>Today</h1><br>
             <div id="todaysPosts" class="text-white">
             </div>
-    </div>
-    <!-- Reports between 1 and 7 days old-->
-    <div class="col-md-4">
-        <h1>This Week</h1><br>
-        <div id="weeklyPosts">
+        </div>
+        <!-- Reports between 1 and 7 days old-->
+        <div class="col-md-4">
+            <h1>This Week</h1><br>
+            <div id="weeklyPosts">
+            </div>
+        </div>
+        <!-- Reports Greater than 7 days old-->
+        <div class="col-md-4 text-white bg-dark">
+            <h1>Older</h1><br>
+            <div id="OlderPosts">
+            </div>
         </div>
     </div>
-    <!-- Reports Greater than 7 days old-->
-    <div class="col-md-4 text-white bg-dark">
-        <h1>Older</h1><br>
-        <div id="OlderPosts">
-        </div>
-    </div>  
-</div>
-   
+
     <!--    
     file which will contain all of the client side
 JavaScript that will be used to make 
 asynchronous calls to server side APIs-->
-<script src="/javascripts/feed.js"></script>
+    <script src="/javascripts/feed.js"></script>
 
