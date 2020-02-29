@@ -52,10 +52,51 @@ router.get('/feedClosed', function (req, res, next) {
   res.render('feedClosed');
 });
 
-/* GET Closed Feed page. */
-router.get('/feedTest', function (req, res, next) {
-  res.render('feedTest');
+
+/* Delete report*/
+router.delete('/deleteReport/:id', function (req, res, next) {
+  console.log("delete api called");
+  Report.deleteOne({ _id: req.params.id }, function (err) {
+    if (err)
+      res.send(err);
+    res.json({ status: "commment with id" + req.params.id + " deleted" });
+  }
+  );
 });
+
+/* Change Status to fasle, put request*/
+router.put('/changeStatusFalse/:id', function (req, res, next) {
+  var id = req.params.id;
+  Report.updateOne({ _id: id }, { status: false }, function (err) {
+    if (err)
+      res.send(err);
+    res.json({ status: "Report Status Changed!" });
+  });
+});
+
+/* Change Status to true, put request*/
+router.put('/changeStatusTrue/:id', function (req, res, next) {
+  var id = req.params.id;
+  Report.updateOne({ _id: id }, { status: true }, function (err) {
+    if (err)
+      res.send(err);
+    res.json({ status: "Report Status Changed!" });
+  });
+});
+
+/* Upvote similar versions 
+  increases votes field of Report by 1
+ */
+router.put('/upVote/:id', function (req, res, next) {
+  var id1 = req.params.id;
+  Report.updateOne({ _id: id1 }, { $inc: { votes: 1 } }, function (err) {
+    if (err)
+      res.send(err);
+    res.json({ votes: "Votes NumberChanged!" });
+  });
+});
+
+
 
 /*Adding Report to DB
 * middleware specifies the nuber of files (1) 
@@ -110,48 +151,6 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
   }
 });
 
-/* Delete report*/
-router.delete('/deleteReport/:id', function (req, res, next) {
-  console.log("delete api called");
-  Report.deleteOne({ _id: req.params.id }, function (err) {
-    if (err)
-      res.send(err);
-    res.json({ status: "commment with id" + req.params.id + " deleted" });
-  }
-  );
-});
-
-/* Change Status to fasle, put request*/
-router.put('/changeStatusFalse/:id', function (req, res, next) {
-  var id = req.params.id;
-  Report.updateOne({ _id: id }, { status: false }, function (err) {
-    if (err)
-      res.send(err);
-    res.json({ status: "Report Status Changed!" });
-  });
-});
-
-/* Change Status to true, put request*/
-router.put('/changeStatusTrue/:id', function (req, res, next) {
-  var id = req.params.id;
-  Report.updateOne({ _id: id }, { status: true }, function (err) {
-    if (err)
-      res.send(err);
-    res.json({ status: "Report Status Changed!" });
-  });
-});
-
-/* Upvote similar versions 
-  increases votes field of Report by 1
- */
-router.put('/upVote/:id', function (req, res, next) {
-  var id1 = req.params.id;
-  Report.updateOne({ _id: id1 }, { $inc: { votes: 1 } }, function (err) {
-    if (err)
-      res.send(err);
-    res.json({ votes: "Votes NumberChanged!" });
-  });
-});
 
 
 /*Get Reports <24hours old, with status=true
@@ -223,6 +222,44 @@ router.get('/getAllUnresolvedITReports', function (req, res, next) {
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
     });  
+    res.json(reports);
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* GET /feedOpenIT page. */
+router.get('/feedOpenIT', function (req, res, next) {
+  res.render('AllOpenReportsIT');
+});
+
+/*Get Open Reports  <24hours old, for IT building*/
+router.get('/getTodaysReportsIT', function (req, res, next) {
+  Report.find({
+    $and: [{ "building": { $eq: 'IT' } }, {
+      $and: [
+        {
+          "date_created":
+          {
+            $gte: new Date((new Date().getTime() - (24 * 60 * 60 * 1000)))
+          }
+        },
+        { "status": { $eq: true } }]
+    }]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
     res.json(reports);
   });
 });
