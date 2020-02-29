@@ -21,11 +21,120 @@
         <textarea id="description" rows="4" cols="50" name="comment" form="Report" 
         placeholder="Enter Description here"></textarea>
         <br>
-        <input type="button" id="submitReport" class="btn btn-primary" value="Submit Report">    
+        <input type="button" id="submitReport" class="btn btn-primary" value="Submit Report"> 
+
+        <br> 
+        <div class="row" id="SimilarReports">
+      <div class="col-md-4 text-white bg-dark" style="text-align: center">
+        <div id="SimilarReportsL">
+        </div>
+      </div>
+      <div class="col-md-4" style="text-align: center;">
+        <div id="SimilarReportsM">
+        </div>
+      </div>
+      <div class="col-md-4 bg-dark">
+        <div class="container">
+          <div id="SimilarReportsR" class="text-white">
+          </div>
+        </div>
+      </div>
+</body>
 </body>
 
 <script>
 
+    //when users selects an option for builiding element
+     $("#building").change(function () {
+    var selectedBulding = $('#building').children("option:selected").val();
+        
+    /*calls different function based on value selected by user
+    * function then makes get request and displays all open Reports in the same location
+    with option to vote on similar Report, thus avoiding duplication
+    */    
+    if (selectedBulding.localeCompare("IT") == 0) {
+      console.log("inside the if statement,IT");
+      getAllItReports();
+    } else if (selectedBulding.localeCompare("ReadingRoom") == 0) {
+      console.log("inside the if statement, READING-ROOM");
+      //getAllReadingRoomReports();
+    } else if (selectedBulding.localeCompare("Moffetts") == 0) {
+      console.log("inside the if statement, MOFFETTS");
+      //getAllMoffettsReports();
+    } else if (selectedBulding.localeCompare("Orbsen") == 0) {
+      console.log("inside the if statement, ORBSEN");
+      //getAllOrbsenReports();
+    } else if (selectedBulding.localeCompare("Concourse") == 0) {
+      console.log("inside the if statement, CONCOURSE");
+      //getAllConcourseReports();
+    } else {
+      console.log("Error in JS function detecting building \n and calling appropiate function. Building Value:   - "
+        + selectedBulding);
+    }
+
+  });
+
+  function getAllItReports() {
+    $.ajax({
+      url: '/getAllUnresolvedITReports/',
+      type: 'GET',
+      success: function (data) {
+        console.log(data)
+        console.log("Number of Reports: " + data.length)
+        //3 variables for each col of bootstrap grid
+        var postsL = "";
+        var postsM = "";
+        var postsR = "";
+        for (var i = 0; i < data.length; i++) {
+          
+          /*Creates a string of HTML,CSS and data on each Report
+          Assigns it to a temporary variable and reassigns for each Report
+          */
+          posts = " <div class='row'><div class='col-sm-6'>"
+            + "<img src= '/" + data[i].image_file_name + "' style='width: 200px; height: 250px'></div><div class='col-sm-6'>" +
+            "<p>" + data[i].description + "</p>" + "<p>Building: " +
+            data[i].building + "</p>" + "<p>RoomNo:" + data[i].room_number + "</p>"
+            + "<a href='/' type='button' class='btn btn-success' name='Vote " + data[i]._id + "' '>Vote</a>"
+            + "</p></div></div>";
+          
+          //Ensures even distribution of Reports across 3 columns
+          if ((i + 1) % 3 == 0) {
+            postsR += posts;
+          } else if ((i + 1) % 2 == 0) {
+            postsM += posts;
+          } else {
+            postsL += posts;
+          }
+
+        }
+        //Replace inner HTMl, each element represents a col in grid.
+        $("#SimilarReportsR").html(postsR);
+        $("#SimilarReportsM").html(postsM);
+        $("#SimilarReportsL").html(postsL);
+
+      }
+    });
+  }
+
+
+    /*Sends put request, which adds 1 to the votes field of Report 
+    *when vote button is pressed
+    */
+  $("#SimilarReports").click(function (event) {
+    var targetArray = event.target.name.split(" ");
+    console.log(event.target.name);
+    if (targetArray[0] == "Vote") {
+      $.ajax({
+        url: '/upVote/' + targetArray[1],
+        type: 'PUT',
+        success: function (result) {
+          getTodaysComments();
+        }
+      });
+    }
+  });
+
+    
     $("#submitReport").click(function () {
 
         var fd = new FormData();
