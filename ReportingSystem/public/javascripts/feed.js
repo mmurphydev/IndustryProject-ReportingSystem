@@ -26,9 +26,9 @@ $(document).ready(
                         +"<p>Status: "+data[i].status
                         +"<br>Votes: "+data[i].up_votes
                         +"<br><button type='button' id='del' name='changeStatus " 
-                            + data[i]._id +"' class='btn btn-primary'>Fixed</button>"+
+                            + data[i]._id +" Older' class='btn btn-primary'>Fixed</button>"+
                        "<button type='button' id='del' name='delete "
-                            +data[i]._id+"' class='btn btn-danger'>Delete</button>" 
+                            +data[i]._id+" Older' class='btn btn-danger'>Delete</button>" 
                         +"</p></div></div><br>";
                     }
                     //Replaces inner HTML of element where id='OlderPosts' with posts. 
@@ -47,7 +47,7 @@ $(document).ready(
                     var posts = "";
                     for (var i = 0; i < data.length; i++) 
                     {    //creates a new row for each Report and displays each attribute using HTML tags                    
-                        posts+= " <div class='row text-white'><div class='col-sm-6'>"
+                        posts+= " <div class='row'><div class='col-sm-6'>"
                         + "<img src= '/"+data[i].image_file_name  + "' style='width: 150px; height: 250px'>"
                         +"</div><div class='col-sm-6'>"+
                         "<p> Description: "+ data[i].description + "</p>"
@@ -56,9 +56,9 @@ $(document).ready(
                         +"<p>Status: "+data[i].status
                         +"<br>Votes: "+data[i].up_votes
                         +"<br><button type='button' id='del' name='changeStatus " 
-                            + data[i]._id +"' class='btn btn-primary'>Fixed</button>"+
+                            + data[i]._id +" Weekly' class='btn btn-primary'>Fixed</button>"+
                        "<button type='button' id='del' name='delete "
-                            +data[i]._id+"' class='btn btn-danger'>Delete</button>" 
+                            +data[i]._id+" Weekly' class='btn btn-danger'>Delete</button>" 
                         +"</p></div></div><br>";
                     }
                     //Replaces inner HTML of element where id='WeeklyPosts' with posts. 
@@ -92,9 +92,9 @@ $(document).ready(
                     +"<p>Status: "+data[i].status
                     +"<br>Votes: "+data[i].up_votes
                     +"<br><button type='button' id='del' name='changeStatus " 
-                        + data[i]._id +"' class='btn btn-primary'>Fixed</button>"+
+                        + data[i]._id +" Today' class='btn btn-primary'>Fixed</button>"+
                    "<button type='button' id='del' name='delete "
-                        +data[i]._id+"' class='btn btn-danger'>Delete</button>" 
+                        +data[i]._id+" Today' class='btn btn-danger'>Delete</button>" 
                     +"</p></div></div><br>";
                 }
                 //Replaces inner HTML of element where id='TodaysPosts' with posts. 
@@ -105,11 +105,12 @@ $(document).ready(
     }
 
     //Delets Report from DB
-    $("#todaysPosts").click(function (event){
+    $("#posts").click(function (event){
         /*splits name of target(button clicked) at every space, adding it to an array
         Name consits of 1) Desired Action & 2) id of Report in DB  
         */
         var targetArray = event.target.name.split(" ");
+        console.log(targetArray[2]);
         //If true, sends delte request, passing id as param.
         if(targetArray[0] == "delete"){
             //alert("Disabled During Demo ");  //uncomment for demo + disable below
@@ -117,22 +118,31 @@ $(document).ready(
             url: '/deleteReport/' + targetArray[1],
             type: 'DELETE',
             success: function(result) {
+                if (targetArray[2] == "Today"){
                 getTodaysReports(); //reloads Reports
+                }else if (targetArray[2]== "Weekly"){
+                    getWeeklyReports();
+                }else getOlderReports();
                     }
             });
         }
     });
 
     //Changes status of Report to false 
-    $("#todaysPosts").click(function (event){
+    $("#posts").click(function (event){
         var targetArray = event.target.name.split(" ");
+        console.log(targetArray[2]);
         if(targetArray[0] == "changeStatus"){
             $.ajax({
             url: '/changeStatusFalse/' + targetArray[1],
             type: 'PUT',
             success: function(result) {
-                getTodaysReports();
-                    }
+                if (targetArray[2] == "Today"){
+                    getTodaysReports(); //reloads Reports
+                    }else if (targetArray[2]== "Weekly"){
+                        getWeeklyReports();
+                    }else getOlderReports();
+                        }
             });
         }
     });
