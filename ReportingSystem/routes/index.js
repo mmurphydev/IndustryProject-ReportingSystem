@@ -153,7 +153,7 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
 
 
 
-/*Get Reports <24hours old, with status=true
+/*Get Open Reports <24hours old, with status=true
 * sorted by votes (desc) then date(oldest first)
 */
 router.get('/getTodaysReports', function (req, res, next) {
@@ -178,6 +178,61 @@ router.get('/getTodaysReports', function (req, res, next) {
     res.json(reports);
   });
 });
+
+
+/*Get Open Reports >24hours but < 7days old old*/
+router.get('/getWeeklyReports', function (req, res, next) {
+  Report.find({
+    $and: [
+      {
+        "date_created":
+        {//this is returning everything <7days old, but > 1 day old
+          $gte: new Date((new Date().getTime() - (7 * 24 * 60 * 60 * 1000))), //less than 7 days 
+          $lte: new Date(new Date().getTime() - (24 * 60 * 60 * 1000)) //greater than 1 day
+        }
+      },
+      { "status": { $eq: true } }]
+  },
+    function (err, reports) {
+      if (err)
+        res.send(err);
+       
+      //takes js array (reports) and sorts it by votes, then date
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });
+
+      //repeat above for date!!
+      console.log("After sorting array "+ reports);  
+      res.json(reports);
+    });
+});
+
+
+/*Get Open Reports >7days old old*/
+router.get('/getOlderReports', function (req, res, next) {
+  Report.find({
+    "date_created":
+    {//this is returning everything >7days old
+      $lte: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000))
+    }
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });  
+    res.json(reports);
+  });
+});
+
+
+
 
 
 /*Get Closed Reports <24hours old, with status=false
