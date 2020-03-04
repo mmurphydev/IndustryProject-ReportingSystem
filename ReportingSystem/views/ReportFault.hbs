@@ -1,166 +1,155 @@
-<body>
-    <div class="container">  
-    <form id="Report" enctype="multipart/form-data">
-      <div>
-        Building:
-                <select id="building">
-                    <option value="Moffetts">Moffetts</option>
-                    <option value="IT">IT</option>
-                    <option value="Orbsen">Orbsen</option>
-                    <option value="Concourse">Concourse</option>
-                </select><br>
-        Room Number: 
-                <input type="text" id="roomNo" placeholder="eg. AC101"><br>
-        <br>
-        <!--Accepts image from any device, taken with camera or selected from saved images/documents-->
-        <input type="file" accept="image/*" id="ImageUpload"><br>
-      </div>
-    </form>
-    Description: <br>
-        <!--textarea which is still part of the Report form-->
-        <textarea id="description" rows="4" cols="50" name="comment" form="Report" 
-        placeholder="Enter Description here"></textarea>
-        <br>
-        <input type="button" id="submitReport" class="btn btn-primary" value="Submit Report"> 
 
-        <br> 
-        <div class="row" id="SimilarReports">
-      <div class="col-md-4 text-white bg-dark" style="text-align: center">
-        <div id="SimilarReportsL">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<div class="container">
+  <br>
+  <form id="Report" enctype="multipart/form-data">
+    <div>
+      Building:
+      <select id="building">
+        <option value="Moffetts">Moffetts</option>
+        <option value="IT">IT</option>
+        <option value="Orbsen">Orbsen</option>
+        <option value="Concourse">Concourse</option>
+      </select><br>
+      Room Number:
+      <input type="text" id="roomNo" placeholder="eg. AC101" required><br>
+      <br>
+      <!--Accepts image from any device, taken with camera or selected from saved images/documents-->
+      <input type="file" accept="image/*" id="ImageUpload"><br>
+    </div>
+  </form>
+  Description: <br>
+  <!--textarea which is still part of the Report form-->
+  <textarea id="description" rows="4" cols="30" name="comment" form="Report"
+    placeholder="Enter Description here"></textarea>
+  <br>
+  <input type="button" id="submitReport" class="btn btn-primary" value="Submit Report">
+
+  <br>
+
+  
+  <div class="row" id="SimilarReports">
+    <div class="col-md-4 text-white bg-dark" >
+      <div id="SimilarReportsL">
+      </div>
+    </div>
+    <div class="col-md-4" style="padding: 10px;">
+      <div id="SimilarReportsM">
+      </div>
+    </div>
+    <div class="col-md-4 bg-dark">
+      <div class="container">
+        <div id="SimilarReportsR" class="text-white">
         </div>
       </div>
-      <div class="col-md-4" style="text-align: center;">
-        <div id="SimilarReportsM">
-        </div>
-      </div>
-      <div class="col-md-4 bg-dark">
-        <div class="container">
-          <div id="SimilarReportsR" class="text-white">
-          </div>
-        </div>
-      </div>
-</body>
-</body>
+    </div>
+  </div>
+</div>
 
-<script>
+    <script>
 
-    //when users selects an option for builiding element
-     $("#building").change(function () {
-    var selectedBulding = $('#building').children("option:selected").val();
-        
-    /*calls different function based on value selected by user
-    * function then makes get request and displays all open Reports in the same location
-    with option to vote on similar Report, thus avoiding duplication
-    */    
-    if (selectedBulding.localeCompare("IT") == 0) {
-      console.log("inside the if statement,IT");
-      getAllItReports();
-    } else if (selectedBulding.localeCompare("ReadingRoom") == 0) {
-      console.log("inside the if statement, READING-ROOM");
-      //getAllReadingRoomReports();
-    } else if (selectedBulding.localeCompare("Moffetts") == 0) {
-      console.log("inside the if statement, MOFFETTS");
-      //getAllMoffettsReports();
-    } else if (selectedBulding.localeCompare("Orbsen") == 0) {
-      console.log("inside the if statement, ORBSEN");
-      //getAllOrbsenReports();
-    } else if (selectedBulding.localeCompare("Concourse") == 0) {
-      console.log("inside the if statement, CONCOURSE");
-      //getAllConcourseReports();
-    } else {
-      console.log("Error in JS function detecting building \n and calling appropiate function. Building Value:   - "
-        + selectedBulding);
-    }
+      /*when users selects an option for builiding element
+        makes get request to different route depending of value chosen
+      */
+      $("#building").change(function () {
+        var selectedBulding = $('#building').children("option:selected").val();
 
-  });
+        $.ajax({
+          url: '/getAllOpenReports' + selectedBulding + '/',
+          type: 'GET',
+          success: function (data) {
+            console.log(data)
+            console.log("Number of Reports: " + data.length)
+            //3 variables for each col of bootstrap grid
+            var postsL = "";
+            var postsM = "";
+            var postsR = "";
+            for (var i = 0; i < data.length; i++) {
 
-  function getAllItReports() {
-    $.ajax({
-      url: '/getAllUnresolvedITReports/',
-      type: 'GET',
-      success: function (data) {
-        console.log(data)
-        console.log("Number of Reports: " + data.length)
-        //3 variables for each col of bootstrap grid
-        var postsL = "";
-        var postsM = "";
-        var postsR = "";
-        for (var i = 0; i < data.length; i++) {
-          
-          /*Creates a string of HTML,CSS and data on each Report
-          Assigns it to a temporary variable and reassigns for each Report
-          */
-          posts = " <div class='row'><div class='col-sm-6'>"
-            + "<img src= '/" + data[i].image_file_name + "' style='width: 200px; height: 250px'></div><div class='col-sm-6'>" +
-            "<p>" + data[i].description + "</p>" + "<p>Building: " +
-            data[i].building + "</p>" + "<p>RoomNo:" + data[i].room_number + "</p>"
-            + "<a href='/' type='button' class='btn btn-success' name='Vote " + data[i]._id + "' '>Vote</a>"
-            + "</p></div></div>";
-          
-          //Ensures even distribution of Reports across 3 columns
-          if ((i + 1) % 3 == 0) {
-            postsR += posts;
-          } else if ((i + 1) % 2 == 0) {
-            postsM += posts;
-          } else {
-            postsL += posts;
+              /*Creates a string of HTML,CSS and data on each Report
+              Assigns it to a temporary variable and reassigns for each Report
+              */
+              posts = " <div class='row'><div class='col-sm-6'>"
+                + "<img src= '/" + data[i].image_file_name + "' style='width: 80%; height:  100%;'></div><div class='col-sm-6'>" +
+                "<p>" + data[i].description + "</p>" + "<p>Building: " +
+                data[i].building + "</p>" + "<p>RoomNo:" + data[i].room_number + "</p>"
+                + "<a href='/' type='button' class='btn btn-success' name='Vote " + data[i]._id + "' '>Vote</a>"
+                + "</p></div></div><br>";
+
+              //Ensures even distribution of Reports across 3 columns
+              if ((i + 1) % 3 == 0) {
+                postsR += posts;
+              } else if ((i + 1) % 2 == 0) {
+                postsM += posts;
+              } else {
+                postsL += posts;
+              }
+
+            }
+            //Replace inner HTMl, each element represents a col in grid.
+            $("#SimilarReportsR").html(postsR);
+            $("#SimilarReportsM").html(postsM);
+            $("#SimilarReportsL").html(postsL);
+
           }
-
-        }
-        //Replace inner HTMl, each element represents a col in grid.
-        $("#SimilarReportsR").html(postsR);
-        $("#SimilarReportsM").html(postsM);
-        $("#SimilarReportsL").html(postsL);
-
-      }
-    });
-  }
+        });
+      });
 
 
-    /*Sends put request, which adds 1 to the votes field of Report 
-    *when vote button is pressed
-    */
-  $("#SimilarReports").click(function (event) {
-    var targetArray = event.target.name.split(" ");
-    console.log(event.target.name);
-    if (targetArray[0] == "Vote") {
-      $.ajax({
-        url: '/upVote/' + targetArray[1],
-        type: 'PUT',
-        success: function (result) {
-          getTodaysComments();
+
+      /*Sends put request, which adds 1 to the votes field of Report 
+      *when vote button is pressed
+      */
+      $("#SimilarReports").click(function (event) {
+        var targetArray = event.target.name.split(" ");
+        console.log(event.target.name);
+        if (targetArray[0] == "Vote") {
+          $.ajax({
+            url: '/upVote/' + targetArray[1],
+            type: 'PUT',
+            success: function (result) {
+              alert("Thanks for voting!");
+            }
+          });
         }
       });
-    }
-  });
 
-    
-    $("#submitReport").click(function () {
 
-        var fd = new FormData();
-        var files = $('#ImageUpload')[0].files[0]; //sotres users file in a variable
+      $("#submitReport").click(function () {
 
-        //add values from Report form and image to FormData 
-        fd.append('ImageUpload', files);
-        fd.append('description', $('#description').val());
-        fd.append('room_number', $('#roomNo').val());
-        fd.append('building', $('#building').children("option:selected").val());
-        
-        //send post request with body containg ForData
-        $.ajax({
+        console.log($('#description').val() == "");
+        console.log($('#roomNo').val() == "");
+        if ($('#description').val() == "" || $('#roomNo').val() == "") {
+          alert("RoomNumber and Description cannot be empty");
+
+        } else {
+
+          var fd = new FormData();
+          var files = $('#ImageUpload')[0].files[0]; //sotres users file in a variable
+
+          //add values from Report form and image to FormData 
+          fd.append('ImageUpload', files);
+          fd.append('description', $('#description').val());
+          fd.append('room_number', $('#roomNo').val());
+          fd.append('building', $('#building').children("option:selected").val());
+
+          //send post request with body containg ForData
+          $.ajax({
             url: '/AddReport',
             type: 'post',
             data: fd,
             contentType: false,
             processData: false,
             success: function (response) {
-                if (response != 0) {
-                alert("report added!");
-                } else {
+              if (response != 0) {
+                alert(response);
+              } else {
                 alert('file not uploaded');
-                }
+              }
             },
-        });
-    });
+          });
+          document.forms["Report"].reset();
+        }
+      });
 
-</script>
+    </script>

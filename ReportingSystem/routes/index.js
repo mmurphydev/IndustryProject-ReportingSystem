@@ -261,10 +261,13 @@ router.get('/getTodaysClosedReports', function (req, res, next) {
   });
 });
 
+/* -------Getting Open Reports by building ___________________________________________________________________*/
+
+
 /*Get all OPEN Reports for IT building
 * sorted by votes (desc) then date(oldest first)
 */
-router.get('/getAllUnresolvedITReports', function (req, res, next) {
+router.get('/getAllOpenReportsIT', function (req, res, next) {
   Report.find({
     $and: [{ "building": { $eq: 'IT' } }, { "status": { $eq: true } }
     ]
@@ -280,6 +283,7 @@ router.get('/getAllUnresolvedITReports', function (req, res, next) {
     res.json(reports);
   });
 });
+
 
 
 
