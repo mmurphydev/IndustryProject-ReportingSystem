@@ -18,18 +18,20 @@ $(document).ready(
                     for (var i = 0; i < data.length; i++) 
                     {    //creates a new row for each Report and displays each attribute using HTML tags                    
                         posts+= " <div class='row text-white'><div class='col-sm-6'>"
-                        + "<img src= '/"+data[i].image_file_name  + "' style='width: 150px; height: 250px'>"
-                        +"</div><div class='col-sm-6'>"+
-                        "<p> Description: "+ data[i].description + "</p>"
-                        + "<p>Building: "+data[i].building+"</p>"
+                        + "<img onclick= "+str+" name ='img' src= '/"+data[i].image_file_name  
+                        + "' style='width: 50px; height: 50px'>"+" Votes: "+data[i].votes
+                        +"<br><br><button type='button' id='del' name='changeStatus " 
+                        + data[i]._id +" Older' class='btn btn-primary'>Fixed</button>"+
+                        "<button type='button' id='del' name='delete "
+                        +data[i]._id+" Older' class='btn btn-danger'>Delete</button>" 
+                        +"</div><div class='col-sm-6'style='text-align: left'>"+"<p>Building: "+data[i].building+"</p>"
                         + "<p>RoomNo:"+ data[i].room_number+"</p>"
+                        +
+                        "<p> Description: "+ data[i].description + "</p>"
                         +"<p>Status: "+data[i].status
-                        +"<br>Votes: "+data[i].up_votes
-                        +"<br><button type='button' id='del' name='changeStatus " 
-                            + data[i]._id +" Older' class='btn btn-primary'>Fixed</button>"+
-                       "<button type='button' id='del' name='delete "
-                            +data[i]._id+" Older' class='btn btn-danger'>Delete</button>" 
+                        +"<br>" 
                         +"</p></div></div><br>";
+    
                     }
                     //Replaces inner HTML of element where id='OlderPosts' with posts. 
                     $("#OlderPosts").html(posts); 
@@ -48,18 +50,20 @@ $(document).ready(
                     for (var i = 0; i < data.length; i++) 
                     {    //creates a new row for each Report and displays each attribute using HTML tags                    
                         posts+= " <div class='row'><div class='col-sm-6'>"
-                        + "<img src= '/"+data[i].image_file_name  + "' style='width: 150px; height: 250px'>"
-                        +"</div><div class='col-sm-6'>"+
-                        "<p> Description: "+ data[i].description + "</p>"
-                        + "<p>Building: "+data[i].building+"</p>"
+                        + "<img onclick= "+str+" name ='img' src= '/"+data[i].image_file_name  
+                        + "' style='width: 50px; height: 50px'>"+" Votes: "+data[i].votes
+                        +"<br><br><button type='button' id='del' name='changeStatus " 
+                        + data[i]._id +" Weekly' class='btn btn-primary'>Fixed</button>"+
+                        "<button type='button' id='del' name='delete "
+                        +data[i]._id+" Weekly' class='btn btn-danger'>Delete</button>" 
+                        +"</div><div class='col-sm-6' style='text-align: left'>"+"<p>Building: "+data[i].building+"</p>"
                         + "<p>RoomNo:"+ data[i].room_number+"</p>"
+                        +
+                        "<p> Description: "+ data[i].description + "</p>"
                         +"<p>Status: "+data[i].status
-                        +"<br>Votes: "+data[i].up_votes
-                        +"<br><button type='button' id='del' name='changeStatus " 
-                            + data[i]._id +" Weekly' class='btn btn-primary'>Fixed</button>"+
-                       "<button type='button' id='del' name='delete "
-                            +data[i]._id+" Weekly' class='btn btn-danger'>Delete</button>" 
+                        +"<br>" 
                         +"</p></div></div><br>";
+    
                     }
                     //Replaces inner HTML of element where id='WeeklyPosts' with posts. 
                     $("#WeeklyPosts").html(posts); 
@@ -84,18 +88,20 @@ $(document).ready(
                 for (var i = 0; i < data.length; i++) 
                 {    //creates a new row for each Report and displays each attribute using HTML tags                    
                     posts+= " <div class='row text-white'><div class='col-sm-6'>"
-                    + "<img src= '/"+data[i].image_file_name  + "' style='width: 150px; height: 250px'>"
-                    +"</div><div class='col-sm-6'>"+
-                    "<p> Description: "+ data[i].description + "</p>"
-                    + "<p>Building: "+data[i].building+"</p>"
+                    + "<img onclick= "+str+" name ='img' src= '/"+data[i].image_file_name  
+                    + "' style='width: 50px; height: 50px'>"+" Votes: "+data[i].votes
+                    +"<br><br><button type='button' id='del' name='changeStatus " 
+                    + data[i]._id +" Today' class='btn btn-primary'>Fixed</button>"+
+                    "<button type='button' id='del' name='delete "
+                    +data[i]._id+" Today' class='btn btn-danger'>Delete</button>" 
+                    +"</div><div class='col-sm-6'style='text-align: left'>"+"<p>Building: "+data[i].building+"</p>"
                     + "<p>RoomNo:"+ data[i].room_number+"</p>"
+                    +
+                    "<p> Description: "+ data[i].description + "</p>"
                     +"<p>Status: "+data[i].status
-                    +"<br>Votes: "+data[i].up_votes
-                    +"<br><button type='button' id='del' name='changeStatus " 
-                        + data[i]._id +" Today' class='btn btn-primary'>Fixed</button>"+
-                   "<button type='button' id='del' name='delete "
-                        +data[i]._id+" Today' class='btn btn-danger'>Delete</button>" 
+                    +"<br>" 
                     +"</p></div></div><br>";
+
                 }
                 //Replaces inner HTML of element where id='TodaysPosts' with posts. 
                 $("#TodaysPosts").html(posts); 

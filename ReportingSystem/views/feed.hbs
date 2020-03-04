@@ -1,71 +1,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
-        
-        .navbarw {
-            overflow: hidden;
-            background-color: #333;
-        }
-
-        .navbarw a {
-            float: left;
-            font-size: 16px;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-        }
-
-        .dropdownw {
-            float: left;
-            overflow: hidden;
-        }
-
-        .dropdownw .dropbtnw {
-            font-size: 16px;
-            border: none;
-            outline: none;
-            color: white;
-            padding: 14px 16px;
-            background-color: inherit;
-            font-family: inherit;
-            margin: 0;
-        }
-
-        .navbarw a:hover,
-        .dropdownw:hover .dropbtnw {
-            background-color: red;
-        }
-
-        .dropdown-contentw {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
-
-        .dropdown-contentw a {
-            float: none;
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-        }
-
-        .dropdown-contentw a:hover {
-            background-color: #ddd;
-        }
-
-        .dropdownw:hover .dropdown-contentw {
-            display: block;
-        }
-    </style>
-
-
+     <link rel='stylesheet' href='/stylesheets/feedStyle.css'/>
     <!--NavBar-->
     <div class="navbarw">
         <a href="/">Home</a>
@@ -124,6 +60,47 @@
             </div>
         </div>
     </div>
+
+
+    <!--Model to expand image on click-->
+  <div id="id01" class="modal">
+
+    <form class="modal-content animate">
+      <div class="imgcontainer">
+        <span onclick="document.getElementById('id01').style.display='none'" class="close"
+          title="Close Modal">&times;</span>
+        <div class="container" id="innerimage">
+
+        </div><br><br><br><br><br><br><br><br><br><br>
+      </div>
+    </form>
+</div>
+    <script>
+
+      $("#posts").click(function (event) {
+        if (event.target.name=="img"){
+        var targetArray = event.target.name
+        console.log(targetArray);
+
+        var innerImage = "<img src= '" + event.target.src + "' style='width: 80%; height: 80%'>"
+
+        //var innerImage= "<h1>"+event.target.src+"</h1>";
+        $("#innerimage").html(innerImage);
+      }}
+      );
+
+      var str = "document.getElementById('id01').style.display='block'"
+      // Get the modal
+      var modal = document.getElementById('id01');
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+    </script>
+
 
     <!--    
     file which will contain all of the client side

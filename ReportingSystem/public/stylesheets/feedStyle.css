@@ -1,0 +1,190 @@
+
+/*CSS for Animated expanding  model
+    source: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_login_form_modal 
+    Original used for login Form, which appears when button is clicked.
+    Repurposed to display image when image is clicked. 
+    
+*/
+
+/* Center the image and position the close button */
+.imgcontainer {
+text-align: center;
+margin: 24px 0 12px 0;
+position: relative;
+}
+
+img.avatar {
+width: 40%;
+border-radius: 50%;
+}
+
+.container {
+padding: 16px;
+}
+
+span.psw {
+float: right;
+padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+display: none;
+/* Hidden by default */
+position: fixed;
+/* Stay in place */
+z-index: 1;
+/* Sit on top */
+left: 0;
+top: 0;
+width: 100%;
+/* Full width */
+height: 100%;
+/* Full height */
+overflow: auto;
+/* Enable scroll if needed */
+background-color: rgb(0, 0, 0);
+/* Fallback color */
+background-color: rgba(0, 0, 0, 0.4);
+/* Black w/ opacity */
+padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+background-color: #fefefe;
+margin: 5% auto 15% auto;
+/* 5% from the top, 15% from the bottom and centered */
+border: 1px solid #888;
+width: 80%;
+/* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+position: absolute;
+right: 25px;
+top: 0;
+color: #000;
+font-size: 35px;
+font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+color: red;
+cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+-webkit-animation: animatezoom 0.6s;
+animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+from {
+-webkit-transform: scale(0)
+}
+
+to {
+-webkit-transform: scale(1)
+}
+}
+
+@keyframes animatezoom {
+from {
+transform: scale(0)
+}
+
+to {
+transform: scale(1)
+}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+span.psw {
+display: block;
+float: none;
+}
+
+.cancelbtn {
+width: 100%;
+}
+}
+
+/*
+End of CSS  for Expansing image model
+
+*/
+
+/*
+CSS for NavBar
+source: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_dropdown_navbar
+CSS classes were renamed as they were conflicting with bootstrap classes (added in layout page) 
+*/
+
+/*NavBar CSS*/
+.navbarw {
+    overflow: hidden;
+    background-color: #333;
+}
+
+.navbarw a {
+    float: left;
+    font-size: 16px;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.dropdownw {
+    float: left;
+    overflow: hidden;
+}
+
+.dropdownw .dropbtnw {
+    font-size: 16px;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 14px 16px;
+    background-color: inherit;
+    font-family: inherit;
+    margin: 0;
+}
+
+.navbarw a:hover,
+.dropdownw:hover .dropbtnw {
+    background-color: red;
+}
+
+.dropdown-contentw {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-contentw a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-contentw a:hover {
+    background-color: #ddd;
+}
+
+.dropdownw:hover .dropdown-contentw {
+    display: block;
+}
+
+/* End Of NavBar CSS*/
