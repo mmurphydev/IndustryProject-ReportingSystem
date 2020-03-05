@@ -104,19 +104,18 @@ router.put('/upVote/:id', function (req, res, next) {
 */
 
 router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next) {
-  
-  console.log("logging file" + req.file.filename);
- 
+  console.log("Add report called");
   console.log(req.body);
-  console.log("logging path "+ req.body.path);
-  console.log("loggin building: " + req.body.building);
-  console.log("loggin description: " + req.body.description);
-  console.log("loggin room_number: " + req.body.room_number);
-  console.log("lat postionn: " + req.body.latitude);
-  console.log("long position: " + req.body.longitude);
-  console.log(req.file.filename)
+  var filePath;
 
-
+  //If no image upload save path as path to default image, otherwise save image path to DB
+  if (req.body.ImageUpload=='undefined'){
+    filePath= "images/noImage.jpg";
+    
+  }else{
+  filePath=req.file.path;
+  }
+ 
   //create new report with values from body
   report = new Report({
     description: req.body.description,
@@ -124,7 +123,7 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
     room_number: req.body.room_number,
     // longitude: req.body.longitude,
     // latitude: req.body.latitude,
-    image_file_name: req.file.path,
+    image_file_name: filePath,
   
   });
   /*Report is saved if description & room_number contains Alphanumeric characters only 
@@ -135,19 +134,24 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
   {   
     report.save(function (err, savedReport) {
       if (err)
+        
         throw err;
-      res.json({ //Send response with saved details (for testing/debugging)
-        "id": savedReport._id,
-        "building": savedReport.building,
-        "Room Number": savedReport.room_number,
-        "description": savedReport.description,
-        "longitude": savedReport.longitude,
-        "latitude": savedReport.latitude,
-        "file name ": savedReport.image_file_name
-      });
+      console.log("Report Sucessfully Saved");
+      // res.json({ //Send response with saved details (for testing/debugging)
+      //   "id": savedReport._id,
+      //   "building": savedReport.building,
+      //   "Room Number": savedReport.room_number,
+      //   "description": savedReport.description,
+      //   "longitude": savedReport.longitude,
+      //   "latitude": savedReport.latitude,
+      //   "file name ": savedReport.image_file_name
+      // });
+
+      res.send("Report for '"+ savedReport.building+ "', Room: '"+ savedReport.room_number+"' saved.")
     });
   }else {
-      res.json({"Error":  "Only letters and Numbers allowed"}) 
+    console.log("Error: validator issue!")
+      res.send({"Error":  "Only letters and Numbers allowed"}) 
   }
 });
 
