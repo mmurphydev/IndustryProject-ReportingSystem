@@ -9,7 +9,7 @@ $(document).ready(
     getTodaysReports();
     function getTodaysReports() {			
         $.ajax({
-            url: '/getAllOpenReportsMoffetts/',
+            url: '/getAllOpenReportsOrbsen/',
             type: 'GET',
             success: function (data) {
                 //console.log(data) //for testing 
@@ -70,12 +70,8 @@ $(document).ready(
             url: '/deleteReport/' + targetArray[1],
             type: 'DELETE',
             success: function(result) {
-                if (targetArray[2] == "Today"){
-                getTodaysReports(); //reloads Reports
-                }else if (targetArray[2]== "Weekly"){
-                    getWeeklyReports();
-                }else getOlderReports();
-                    }
+                
+            }
             });
         }
     });
@@ -89,12 +85,7 @@ $(document).ready(
             url: '/changeStatusFalse/' + targetArray[1],
             type: 'PUT',
             success: function(result) {
-                if (targetArray[2] == "Today"){
-                    getTodaysReports(); //reloads Reports
-                    }else if (targetArray[2]== "Weekly"){
-                        getWeeklyReports();
-                    }else getOlderReports();
-                        }
+                  }
             });
         }
     });

@@ -58,13 +58,13 @@ router.get('/feedClosed', function (req, res, next) {
 /* Delete report*/
 router.delete('/deleteReport/:id', function (req, res, next) {
   console.log("delete api called");
-  res.send("Delete route deactivated during demo!");  
-  // Report.deleteOne({ _id: req.params.id }, function (err) {
-  //   if (err)
-  //     res.send(err);
-  //   res.json({ status: "commment with id" + req.params.id + " deleted" });
-  // }
-  // );
+  // res.send("Delete route deactivated during demo!");  
+  Report.deleteOne({ _id: req.params.id }, function (err) {
+    if (err)
+      res.send(err);
+    res.json({ status: "commment with id" + req.params.id + " deleted" });
+  }
+  );
 });
 
 /* Change Status to fasle, put request*/
@@ -210,9 +210,7 @@ router.get('/getWeeklyReports', function (req, res, next) {
       return b.votes - a.votes; //Highest votes first
     });
 
-      //repeat above for date!!
-      console.log("After sorting array "+ reports);  
-      res.json(reports);
+    res.json(reports);
     });
 });
 
@@ -290,9 +288,6 @@ router.get('/getWeeklyClosedReports', function (req, res, next) {
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
     });
-
-      //repeat above for date!!
-      console.log("After sorting array "+ reports);  
       res.json(reports);
     });
 });
@@ -369,6 +364,12 @@ router.get('/getAllOpenReportsIT', function (req, res, next) {
   });
 });
 
+
+/* GET /feedOpenIT page. */
+router.get('/feedOpenIT', function (req, res, next) {
+  res.render('OpenBuildingFeed/feedOpenIT');
+});
+
 /*Get all OPEN Reports for Concourse building
 * sorted by votes (desc) then date(oldest first)
 */
@@ -387,6 +388,11 @@ router.get('/getAllOpenReportsConcourse', function (req, res, next) {
     });  
     res.json(reports);
   });
+});
+
+/* GET /feedOpenMoffetts page. */
+router.get('/feedOpenConcourse', function (req, res, next) {
+  res.render('OpenBuildingFeed/FeedOpenConcourse');
 });
 
 
@@ -410,9 +416,9 @@ router.get('/getAllOpenReportsMoffetts', function (req, res, next) {
   });
 });
 
-/* GET /feedOpenIT page. */
+/* GET /feedOpenMoffetts page. */
 router.get('/feedOpenMoffetts', function (req, res, next) {
-  res.render('FeedOpenMoffetts');
+  res.render('OpenBuildingFeed/FeedOpenMoffetts');
 });
 
 
@@ -436,37 +442,15 @@ router.get('/getAllOpenReportsOrbsen', function (req, res, next) {
   });
 });
 
-
+/* GET /feedOpenMoffetts page. */
+router.get('/feedOpenOrbsen', function (req, res, next) {
+  res.render('OpenBuildingFeed/FeedOpenOrbsen');
+});
 
 
 
 /*End of Get all open Reopts by building*/
 
-
-/* GET /feedOpenIT page. */
-router.get('/feedOpenIT', function (req, res, next) {
-  res.render('AllOpenReportsIT');
-});
-
-/*Get Open Reports  <24hours old, for IT building*/
-router.get('/getTodaysReportsIT', function (req, res, next) {
-  Report.find({
-    $and: [{ "building": { $eq: 'IT' } }, {
-      $and: [
-        {
-          "date_created":
-          {
-            $gte: new Date((new Date().getTime() - (24 * 60 * 60 * 1000)))
-          }
-        },
-        { "status": { $eq: true } }]
-    }]
-  }, function (err, reports) {
-    if (err)
-      res.send(err);
-    res.json(reports);
-  });
-});
 
 
 router.get('/EnterReportRatings', function (req, res, next) {

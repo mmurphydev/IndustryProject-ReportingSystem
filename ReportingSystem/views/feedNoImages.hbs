@@ -1,3 +1,8 @@
+<!--
+
+    TODO: 
+        move css to new stylesheet
+-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel='stylesheet' href='/stylesheets/feedStyle.css'/>
@@ -23,7 +28,20 @@
 
         <a href="/feedClosed">Closed Reports</a>
 
-      
+        <!--DropDown with links to Feed of Closed Reports Sorted by building-->
+        <div class="dropdownw">
+            <button class="dropbtnw">Closed Building Reports
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-contentw">
+              <option value="Moffetts">Moffetts</option>
+                    <option value="IT">IT</option>
+                    <option value="Orbsen">Orbsen</option>
+                    <option value="Concourse">Concourse</option>
+            </div>
+
+        </div>
+  
     </div>
 
 
@@ -65,11 +83,11 @@
     <script>
 
       $("#posts").click(function (event) {
-        if (event.target.name=="img"){
+        if (event.target.id=="img"){
         var targetArray = event.target.name
         console.log(targetArray);
 
-        var innerImage = "<img src= '" + event.target.src + "' style='width: 80%; height: 80%'>"
+        var innerImage = "<img src= '" + event.target.name + "' style='width: 80%; height: 80%'>"
 
         //var innerImage= "<h1>"+event.target.src+"</h1>";
         $("#innerimage").html(innerImage);
@@ -92,5 +110,5 @@
     file which will contain all of the client side
 JavaScript that will be used to make 
 asynchronous calls to server side APIs-->
-    <script src="/javascripts/feedClosed.js"></script>
+    <script src="/javascripts/feedNoImages.js"></script>
 

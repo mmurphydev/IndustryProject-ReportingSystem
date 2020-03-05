@@ -23,31 +23,28 @@
 
         <a href="/feedClosed">Closed Reports</a>
 
-      
+       
     </div>
 
 
     <!--BootStrp grid with 3 colums of Reports-->
     <div id= "posts" class="row" style="text-align: center">
-        <!-- Reports less than 24hours old-->
-        <div class="col-md-4 text-white bg-dark">
-            <h1>Today</h1><br>
-            <div id="TodaysPosts" class="text-white">
-            </div>
+      <div class="col-md-4 text-white bg-dark" style="text-align: center">
+        <div id="SimilarReportsL">
         </div>
-        <!-- Reports between 1 and 7 days old-->
-        <div class="col-md-4">
-            <h1>This Week</h1><br>
-            <div id="WeeklyPosts">
-            </div>
+      </div>
+      <div class="col-md-4" style="text-align: center;">
+        <div id="SimilarReportsM">
         </div>
-        <!-- Reports Greater than 7 days old-->
-        <div class="col-md-4 text-white bg-dark">
-            <h1>Older</h1><br>
-            <div id="OlderPosts">
-            </div>
+      </div>
+      <div class="col-md-4 bg-dark">
+        <div class="container">
+          <div id="SimilarReportsR" class="text-white">
+          </div>
         </div>
-    </div>
+      </div>
+
+
 
 <!--Model to expand image on click-->
   <div id="id01" class="modal">
@@ -92,5 +89,5 @@
     file which will contain all of the client side
 JavaScript that will be used to make 
 asynchronous calls to server side APIs-->
-    <script src="/javascripts/feedClosed.js"></script>
+    <script src="/javascripts/OpenBuildingFeeds/feedOpenOrbsen.js"></script>
 

@@ -10,7 +10,7 @@ $(document).ready(
         getOlderReports();
         function getOlderReports() {			
             $.ajax({
-                url: '/getOlderClosedReports/',
+                url: '/getOlderReports/',
                 type: 'GET',
                 success: function (data) {
                     //console.log(data) //for testing 
@@ -18,10 +18,11 @@ $(document).ready(
                     for (var i = 0; i < data.length; i++) 
                     {    //creates a new row for each Report and displays each attribute using HTML tags                    
                         posts+= " <div class='row text-white'><div class='col-sm-6'>"
-                        + "<img onclick= "+str+" name ='img' src= '/"+data[i].image_file_name  
-                        + "' style='width: 50px; height: 50px'>"+" Votes: "+data[i].votes
+                       
+                        + "<button type='button' id ='img' onclick= "+str+" name='/"+data[i].image_file_name+"' class='btn btn-primary'>Show img</button>"
+                        +" Votes: "+data[i].votes
                         +"<br><br><button type='button' id='del' name='changeStatus " 
-                        + data[i]._id +" Older' class='btn btn-primary'>Open</button>"+
+                        + data[i]._id +" Older' class='btn btn-primary'>Fixed</button>"+
                         "<button type='button' id='del' name='delete "
                         +data[i]._id+" Older' class='btn btn-danger'>Delete</button>" 
                         +"</div><div class='col-sm-6'style='text-align: left'>"+"<p>Building: "+data[i].building+"</p>"
@@ -42,7 +43,7 @@ $(document).ready(
         getWeeklyReports();
         function getWeeklyReports() {			
             $.ajax({
-                url: '/getWeeklyClosedReports/',
+                url: '/getWeeklyReports/',
                 type: 'GET',
                 success: function (data) {
                     //console.log(data) //for testing 
@@ -53,7 +54,7 @@ $(document).ready(
                         + "<img onclick= "+str+" name ='img' src= '/"+data[i].image_file_name  
                         + "' style='width: 50px; height: 50px'>"+" Votes: "+data[i].votes
                         +"<br><br><button type='button' id='del' name='changeStatus " 
-                        + data[i]._id +" Weekly' class='btn btn-primary'>Open</button>"+
+                        + data[i]._id +" Weekly' class='btn btn-primary'>Fixed</button>"+
                         "<button type='button' id='del' name='delete "
                         +data[i]._id+" Weekly' class='btn btn-danger'>Delete</button>" 
                         +"</div><div class='col-sm-6' style='text-align: left'>"+"<p>Building: "+data[i].building+"</p>"
@@ -80,7 +81,7 @@ $(document).ready(
     getTodaysReports();
     function getTodaysReports() {			
         $.ajax({
-            url: '/getTodaysClosedReports/',
+            url: '/getTodaysReports/',
             type: 'GET',
             success: function (data) {
                 //console.log(data) //for testing 
@@ -91,7 +92,7 @@ $(document).ready(
                     + "<img onclick= "+str+" name ='img' src= '/"+data[i].image_file_name  
                     + "' style='width: 50px; height: 50px'>"+" Votes: "+data[i].votes
                     +"<br><br><button type='button' id='del' name='changeStatus " 
-                    + data[i]._id +" Today' class='btn btn-primary'>Open</button>"+
+                    + data[i]._id +" Today' class='btn btn-primary'>Fixed</button>"+
                     "<button type='button' id='del' name='delete "
                     +data[i]._id+" Today' class='btn btn-danger'>Delete</button>" 
                     +"</div><div class='col-sm-6'style='text-align: left'>"+"<p>Building: "+data[i].building+"</p>"
@@ -140,7 +141,7 @@ $(document).ready(
         console.log(targetArray[2]);
         if(targetArray[0] == "changeStatus"){
             $.ajax({
-            url: '/changeStatusTrue/' + targetArray[1],
+            url: '/changeStatusFalse/' + targetArray[1],
             type: 'PUT',
             success: function(result) {
                 if (targetArray[2] == "Today"){
