@@ -31,7 +31,7 @@ $(document).ready(
                         +"<p>Status: "+data[i].status
                         +"<br>" 
                         +"</p></div></div><br>";
-
+    
                     }
                     //Replaces inner HTML of element where id='OlderPosts' with posts. 
                     $("#OlderPosts").html(posts); 

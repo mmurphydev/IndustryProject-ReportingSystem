@@ -1,7 +1,12 @@
+<!--
 
+    TODO: 
+        move css to new stylesheet
+-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-     <link rel='stylesheet' href='/stylesheets/feedStyle.css'/>
+    <link rel='stylesheet' href='/stylesheets/feedStyle.css'/>
+
     <!--NavBar-->
     <div class="navbarw">
         <a href="/">Home</a>
@@ -29,13 +34,14 @@
                 <i class="fa fa-caret-down"></i>
             </button>
             <div class="dropdown-contentw">
-                <a href="/feedClosedIT">IT</a>
-                <a href="/feedClosedMoffetts">Moffetts</a>
-                <a href="/feedClosedOrbsen#">Orbsen</a>
-                <a href="/feedClosedConcourse">Concourse</a>
+              <option value="Moffetts">Moffetts</option>
+                    <option value="IT">IT</option>
+                    <option value="Orbsen">Orbsen</option>
+                    <option value="Concourse">Concourse</option>
             </div>
 
         </div>
+  
     </div>
 
 
@@ -61,8 +67,7 @@
         </div>
     </div>
 
-
-    <!--Model to expand image on click-->
+<!--Model to expand image on click-->
   <div id="id01" class="modal">
 
     <form class="modal-content animate">
@@ -100,7 +105,6 @@
         }
       }
     </script>
-
 
     <!--    
     file which will contain all of the client side

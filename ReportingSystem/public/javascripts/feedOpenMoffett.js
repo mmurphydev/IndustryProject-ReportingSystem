@@ -25,7 +25,7 @@ $(document).ready(
          posts= " <div class='row'><div class='col-sm-6'>"
          + "<img onclick= "+str+" name ='img' src= '/"+data[i].image_file_name  
          + "' style='width: 50px; height: 50px'>"+" Votes: "+data[i].votes
-         +"<br><br><button type='button' id='changeStatus' name='changeStatus " 
+         +"<br><br><button type='button' id='del' name='changeStatus " 
          + data[i]._id +" Older' class='btn btn-primary'>Fixed</button>"+
          "<button type='button' id='del' name='delete "
          +data[i]._id+" Older' class='btn btn-danger'>Delete</button>" 
@@ -89,12 +89,11 @@ $(document).ready(
             url: '/changeStatusFalse/' + targetArray[1],
             type: 'PUT',
             success: function(result) {
-                getTodaysReports();
-                // if (targetArray[2] == "Today"){
-                //     getTodaysReports(); //reloads Reports
-                //     }else if (targetArray[2]== "Weekly"){
-                //         getWeeklyReports();
-                //     }else getOlderReports();
+                if (targetArray[2] == "Today"){
+                    getTodaysReports(); //reloads Reports
+                    }else if (targetArray[2]== "Weekly"){
+                        getWeeklyReports();
+                    }else getOlderReports();
                         }
             });
         }

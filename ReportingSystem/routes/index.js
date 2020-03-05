@@ -18,6 +18,8 @@ var fileFilter = (req, file, cb) => {
   if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
     cb(null, true);
   } else {
+    console.log(file.mimetype);
+    res.send("incorrect mimetype");
     cb(null, false); //ignores file and doesnt save it
   };
   
@@ -56,12 +58,13 @@ router.get('/feedClosed', function (req, res, next) {
 /* Delete report*/
 router.delete('/deleteReport/:id', function (req, res, next) {
   console.log("delete api called");
-  Report.deleteOne({ _id: req.params.id }, function (err) {
-    if (err)
-      res.send(err);
-    res.json({ status: "commment with id" + req.params.id + " deleted" });
-  }
-  );
+  res.send("Delete route deactivated during demo!");  
+  // Report.deleteOne({ _id: req.params.id }, function (err) {
+  //   if (err)
+  //     res.send(err);
+  //   res.json({ status: "commment with id" + req.params.id + " deleted" });
+  // }
+  // );
 });
 
 /* Change Status to fasle, put request*/
@@ -92,7 +95,7 @@ router.put('/upVote/:id', function (req, res, next) {
   Report.updateOne({ _id: id1 }, { $inc: { votes: 1 } }, function (err) {
     if (err)
       res.send(err);
-    res.json({ votes: "Votes NumberChanged!" });
+    res.send("Report UpVoted");
   });
 });
 
@@ -151,10 +154,9 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
     });
   }else {
     console.log("Error: validator issue!")
-      res.send({"Error":  "Only letters and Numbers allowed"}) 
+      res.send("Error : Only letters and Numbers allowed"); 
   }
 });
-
 
 
 /*Get Open Reports <24hours old, with status=true
@@ -321,6 +323,29 @@ router.get('/getOlderClosedReports', function (req, res, next) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* -------Getting Open Reports by building ___________________________________________________________________*/
 
 
@@ -411,20 +436,11 @@ router.get('/getAllOpenReportsOrbsen', function (req, res, next) {
   });
 });
 
+
+
+
+
 /*End of Get all open Reopts by building*/
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /* GET /feedOpenIT page. */
@@ -451,6 +467,24 @@ router.get('/getTodaysReportsIT', function (req, res, next) {
     res.json(reports);
   });
 });
+
+
+router.get('/EnterReportRatings', function (req, res, next) {
+  res.render('ManualReporting');
+});
+
+/*Get Open Reports  <24hours old, for IT building*/
+router.get('/getAllUnrankedReports', function (req, res, next) {
+  Report.find( 
+        { "urgency_rating": { $eq: 0 } }, function (err, reports) {
+    if (err)
+      res.send(err);
+    res.json(reports);
+  });
+});
+
+
+
 
 
 module.exports = router;
