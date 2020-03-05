@@ -261,6 +261,62 @@ router.get('/getTodaysClosedReports', function (req, res, next) {
   });
 });
 
+/*Get Closed Reports >24hours but < 7days old old*/
+router.get('/getWeeklyClosedReports', function (req, res, next) {
+  Report.find({
+    $and: [
+      {
+        "date_created":
+        {//this is returning everything <7days old, but > 1 day old
+          $gte: new Date((new Date().getTime() - (7 * 24 * 60 * 60 * 1000))), //less than 7 days 
+          $lte: new Date(new Date().getTime() - (24 * 60 * 60 * 1000)) //greater than 1 day
+        }
+      },
+      { "status": { $eq: false } }]
+  },
+    function (err, reports) {
+      if (err)
+        res.send(err);
+       
+      //takes js array (reports) and sorts it by votes, then date
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });
+
+      //repeat above for date!!
+      console.log("After sorting array "+ reports);  
+      res.json(reports);
+    });
+});
+
+
+/*Get Closed Reports >7days old old*/
+router.get('/getOlderClosedReports', function (req, res, next) {
+  Report.find({
+    $and: [{
+    "date_created":
+    {//this is returning everything >7days old
+      $lte: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000))
+    },},{ "status": { $eq: false } }]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });  
+    res.json(reports);
+  });
+});
+
+
+
+
+
 /* -------Getting Open Reports by building ___________________________________________________________________*/
 
 
@@ -283,6 +339,75 @@ router.get('/getAllOpenReportsIT', function (req, res, next) {
     res.json(reports);
   });
 });
+
+/*Get all OPEN Reports for Concourse building
+* sorted by votes (desc) then date(oldest first)
+*/
+router.get('/getAllOpenReportsConcourse', function (req, res, next) {
+  Report.find({
+    $and: [{ "building": { $eq: 'Concourse' } }, { "status": { $eq: true } }
+    ]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date 
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });  
+    res.json(reports);
+  });
+});
+
+
+/*Get all OPEN Reports for Moffetts building
+* sorted by votes (desc) then date(oldest first)
+*/
+router.get('/getAllOpenReportsMoffetts', function (req, res, next) {
+  Report.find({
+    $and: [{ "building": { $eq: 'Moffetts' } }, { "status": { $eq: true } }
+    ]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date 
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });  
+    res.json(reports);
+  });
+});
+
+/* GET /feedOpenIT page. */
+router.get('/feedOpenMoffetts', function (req, res, next) {
+  res.render('FeedOpenMoffetts');
+});
+
+
+/*Get all OPEN Reports for Orbsen building
+* sorted by votes (desc) then date(oldest first)
+*/
+router.get('/getAllOpenReportsOrbsen', function (req, res, next) {
+  Report.find({
+    $and: [{ "building": { $eq: 'Orbsen' } }, { "status": { $eq: true } }
+    ]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date 
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });  
+    res.json(reports);
+  });
+});
+
+/*End of Get all open Reopts by building*/
 
 
 
