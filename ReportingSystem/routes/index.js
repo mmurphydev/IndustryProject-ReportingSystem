@@ -500,9 +500,53 @@ router.get('/getAllUnrankedReportsOnce', function (req, res, next) {
 
 
 
-/*Get All Reports and use the description and rating of 80% of reports to train the clasifier.
- User the remaining 20% to test the ALGO's accuracy 
- returns the algo accuracy as a response*/
+/*Get All Ranked Reports and use the description and rating of 80% of reports to train the clasifier.
+ User the remaining 20% to test the classifiers accuracy 
+ returns the classifiers accuracy as a response*/
+
+/*Get all ranked reports */
+router.get('/getAllRankedReports', function (req, res, next) {
+  console.log("got this far!!");
+  Report.find(
+    { "urgency_rating": { $ne: 0 } }, function (err, reports) {
+      if (err){
+        res.send(err);
+      }else {
+        console.log("got all reports: "+ reports.length);
+  
+      //Split data in training (80%) and Testing data(20%).
+      trainingData = reports.length*0.80;
+      testingData = reports.length-trainingData;
+      
+        console.log("data split sucessfully");
+       //pass through NLP library? 
+      for (i=0;i<trainingData;i++){
+        classifier.addDocument(reports[i].description, reports[i].urgency_rating);
+        console.log(reports[i].description+" :"+" "+ reports[i].urgency_rating);
+      }
+
+      classifier.train();  //Train classifier
+      console.log("classifier trained");
+
+     var accuracy=0;
+     var correct=0;
+     
+      for (i=reports.length-1;i>trainingData;i--){
+        predicted = classifier.classify(reports[i].description);
+        actual = reports[i].urgency_rating;
+        
+        console.log( "Predicted: "+ predicted+", Actual: " +actual+"\n Description: "+ reports[i].description);
+        console.log("value of comparasion: " + (predicted==actual));
+        if(predicted==actual){
+          correct+=1;
+        } 
+      }
+      console.log("correct"+ correct +", testingDataCount" +Math.floor( testingData));
+      accuracy= correct/ Math.floor( testingData); //rounds down testingData to nearest int
+      res.json(accuracy);
+      }
+    });
+});
 
 
 module.exports = router;

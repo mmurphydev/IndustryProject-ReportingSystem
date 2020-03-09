@@ -53,7 +53,7 @@
       $("#building").change(function () {
         var selectedBulding = $('#building').children("option:selected").val();
 
-        $.ajax({
+   $.ajax({
           url: '/getAllOpenReports' + selectedBulding + '/',
           type: 'GET',
           success: function (data) {
