@@ -59,6 +59,11 @@ router.get('/feedClosed', function (req, res, next) {
   res.render('feedClosed');
 });
 
+/* GET feed page. */
+router.get('/UrgentReports', function (req, res, next) {
+  res.render('feedUrgent');
+});
+
 
 /* Delete report*/
 router.delete('/deleteReport/:id', function (req, res, next) {
@@ -580,6 +585,24 @@ router.get('/getAllUnrankedReports', function (req, res, next) {
         { "urgency_rating": { $eq: 0 } }, function (err, reports) {
     if (err)
       res.send(err);
+    res.json(reports);
+  });
+});
+
+
+router.get('/getAllUrgentReports', function (req, res, next) {
+  Report.find({
+    $and: [{ "classifier_suggested_rating": { $eq: 2 } }, { "status": { $eq: true } }
+    ]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date 
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });
     res.json(reports);
   });
 });
