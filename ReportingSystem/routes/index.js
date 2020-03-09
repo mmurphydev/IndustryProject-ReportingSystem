@@ -111,18 +111,25 @@ router.put('/upVote/:id', function (req, res, next) {
 * and the name of the field that will hold the file to be parsed
 */
 
+
 router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next) {
   console.log("Add report called");
   console.log(req.body);
   var filePath;
 
   //If no image upload save path as path to default image, otherwise save image path to DB
-  if (req.body.ImageUpload == 'undefined') {
-    filePath = "images/noImage.jpg";
-
-  } else {
-    filePath = req.file.path;
+  if (req.body.ImageUpload=='undefined'){
+    filePath= "images/noImage.jpg";
+    
+  }else{
+  filePath=req.file.path;
   }
+
+  
+  //load classifier
+  natural.LogisticRegressionClassifier.load('classifier.json', null, function(err, classifier) {
+    console.log("Classfier value of new report!! "+classifier.classify(req.body.description));
+
 
   //create new report with values from body
   report = new Report({
@@ -132,18 +139,27 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
     // longitude: req.body.longitude,
     // latitude: req.body.latitude,
     image_file_name: filePath,
+    classifier_suggested_rating: classifier.classify(req.body.description),
 
+    
+
+
+  
   });
+
+
   /*Report is saved if description & room_number contains Alphanumeric characters only 
   *  .replace argument removes all spaces from string before passing it to isAlphanumeric method.
   *     otherwise isAlphanumeric() would return false for any filed with spaces.
   */
-  if ((validator.isAlphanumeric(req.body.description.replace(/\s+/g, ''))) && (validator.isAlphanumeric(req.body.room_number.replace(/\s+/g, '')))) {
+  if ((validator.isAlphanumeric(req.body.description.replace(/\s+/g,''))) && (validator.isAlphanumeric(req.body.room_number.replace(/\s+/g,''))))
+  {   
     report.save(function (err, savedReport) {
       if (err)
-
+        
         throw err;
       console.log("Report Sucessfully Saved");
+      console.log(savedReport);
       // res.json({ //Send response with saved details (for testing/debugging)
       //   "id": savedReport._id,
       //   "building": savedReport.building,
@@ -154,12 +170,16 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
       //   "file name ": savedReport.image_file_name
       // });
 
-      res.send("Report for '" + savedReport.building + "', Room: '" + savedReport.room_number + "' saved.")
+      res.send("Report for '"+ savedReport.building+ "', Room: '"+ savedReport.room_number +"' "
+      +" Automated Urgency Rating: "+savedReport.classifier_suggested_rating +"saved.");
+            
     });
-  } else {
+       
+  }else {
     console.log("Error: validator issue!")
-    res.send("Error : Only letters and Numbers allowed");
+      res.send("Error : Only letters and Numbers allowed"); 
   }
+});
 });
 
 
@@ -465,7 +485,8 @@ router.put('/changeRating/:rating&:id', function (req, res, next) {
   Report.updateOne({ _id: id }, { urgency_rating: rating }, function (err) {
     if (err)
       res.send(err);
-    res.json({ status: "Report Status Changed!" });
+    
+    //res.json({ status: "Ranking Changed!" });
   });
 });
 
@@ -528,6 +549,10 @@ router.get('/getAllRankedReports', function (req, res, next) {
       classifier.train();  //Train classifier
       console.log("classifier trained");
 
+      classifier.save('classifier.json', function(err, classifier) {
+        // the classifier is saved to the classifier.json file!
+    });
+
      var accuracy=0;
      var correct=0;
      
@@ -548,5 +573,15 @@ router.get('/getAllRankedReports', function (req, res, next) {
     });
 });
 
+
+/*Get all unranked reports*/
+router.get('/getAllUnrankedReports', function (req, res, next) {
+  Report.find( 
+        { "urgency_rating": { $eq: 0 } }, function (err, reports) {
+    if (err)
+      res.send(err);
+    res.json(reports);
+  });
+});
 
 module.exports = router;

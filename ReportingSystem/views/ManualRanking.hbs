@@ -1,6 +1,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel='stylesheet' href='/stylesheets/feedStyle.css'/>
 
-<button id="addField">Create Fields</button>
+<!--NavBar-->
+    <div class="navbarw">
+        <a href="/">Home</a>
+        <a href="/feed">Main Feed</a>
+        <a href="/Report">Add Report</a>
+        <!--DropDown with links to Feed of Open Reports Sorted by building-->
+        <div class="dropdownw">
+            <button class="dropbtnw">Open Building Reports
+                <i class="fa fa-caret-down"></i>
+            </button>
+
+            <div class="dropdown-contentw">
+                <a href="/feedOpenIT">IT</a>
+                <a href="/feedOpenMoffetts">Moffetts</a>
+                <a href="/feedOpenOrbsen">Orbsen</a>
+                <a href="/feedOpenConcourse">Concourse</a>
+            </div>
+        </div>
+
+        <a href="/feedClosed">Closed Reports</a>
+        <a href="/EnterReportRatings">Train Classifier</a>
+
+      
+    </div>
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Classifier Training</h1>
+    <p class="lead"> Here you can train the NLP clasifier, which uses logistical Regression to classify Reports
+        <br> into three sections: </p>
+         <ul>
+            <li>(-1) Delete </li>
+            <li>( 1) Nonurgent</li>
+            <li>( 2) Urgent </li>
+        </ul>
+
+        <br>
+        <p class="lead">
+        Click the 'Rank Reports' button to display all unranked Reports.<br>
+        Select a Rating value for each report by clicking the buttons below. <br>
+        Click the 'Train Classifier' button.<br>
+        The Reports and the ratings you have assigned will be used to train the classifier. <br>
+        The classifier will then be applied to all new incoming reports 
+        <br> and a suggested rating will be assigned to each.   
+    </p>
+  </div>
+</div>
+
+<button id="Rank" class="btn btn-primary" >Rank Reports</button>
+
 
 
 <div class="container">
@@ -22,16 +71,17 @@
         </div>
     </div>
 </div>
+<button id="Train" class="btn btn-success">Train Classifier</button>
 
 <script>
 
     /*when users selects an option for builiding element
       makes get request to different route depending of value chosen
     */
-    function getUnrankedReports() {
+    function getUnrankedReports(str) {
         
         $.ajax({
-            url: '/getAllRankedReports/',
+            url: str,
             type: 'GET',
             success: function (data) {
                 console.log(data)
@@ -49,8 +99,9 @@
                         + "<img src= '/" + data[i].image_file_name +
                          "' style='width: 80%; height:  100%;'></div><div class='col-sm-6'>" +
                         "<p>" + data[i].description + "</p>" + "<p>Building: " +
-                        data[i].building + "</p>" + "<p>RoomNo:" + data[i].room_number + "</p>"
-                        + "<button  name='-1 " +
+                        data[i].building + "</p>" + "<p>RoomNo:" + data[i].room_number +
+                             "</p> Suggested Rating:"+ data[i].classifier_suggested_rating 
+                        + "<br><br>Select Rating Below: <br><button  name='-1 " +
                          data[i]._id + "' '>-1</button> "  //false 
                          + " <button  name='1 " +
                          data[i]._id + "' '>1</button> "     //noturgent
@@ -90,21 +141,18 @@
                 url: '/changeRating/' + targetArray[0]+"&"+targetArray[1],
                 type: 'PUT',
                 success: function (result) {
-                    alert("Thanks for voting!, Redirecting to homePage..");
                 }
             });
-        
     });
 
-    $("#addField").click(function (event) {
-        
-        console.log(event.target.name);
-    
-            console.log("success");
-            getUnrankedReports();
-
-        
+    $("#Rank").click(function (event) {
+                getUnrankedReports('/getAllUnrankedReports/');        
     });
+
+    $("#Train").click(function (event) {
+            getUnrankedReports('/getAllRankedReports/');
+    });
+
 
 
 </script>
