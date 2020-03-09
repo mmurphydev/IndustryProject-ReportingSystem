@@ -458,7 +458,7 @@ router.get('/feedOpenOrbsen', function (req, res, next) {
 
 
 
-/* Change Status to fasle, put request*/
+/* Change urgency_rating, put request*/
 router.put('/changeRating/:rating&:id', function (req, res, next) {
   var id = req.params.id;
   var rating = req.params.rating;
@@ -470,18 +470,9 @@ router.put('/changeRating/:rating&:id', function (req, res, next) {
 });
 
 
-
-/*Get all unranked reports*/
-router.get('/getAllUnrankedReports', function (req, res, next) {
-  Report.find(
-    { "urgency_rating": { $eq: 0 } }, function (err, reports) {
-      if (err)
-        res.send(err);
-
-      res.json(reports);
-    });
+router.get('/EnterReportRatings', function (req, res, next) {
+  res.render('ManualRanking');
 });
-
 
 
 router.get('/getAllUnrankedReportsOnce', function (req, res, next) {
@@ -508,6 +499,10 @@ router.get('/getAllUnrankedReportsOnce', function (req, res, next) {
 });
 
 
+
+/*Get All Reports and use the description and rating of 80% of reports to train the clasifier.
+ User the remaining 20% to test the ALGO's accuracy 
+ returns the algo accuracy as a response*/
 
 
 module.exports = router;

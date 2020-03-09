@@ -1,0 +1,110 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<button id="addField">Create Fields</button>
+
+
+<div class="container">
+    
+    <div class="row" id="SimilarReports">
+        <div class="col-md-4 text-white bg-dark">
+            <div id="SimilarReportsL">
+            </div>
+        </div>
+        <div class="col-md-4" style="padding: 10px;">
+            <div id="SimilarReportsM">
+            </div>
+        </div>
+        <div class="col-md-4 bg-dark">
+            <div class="container">
+                <div id="SimilarReportsR" class="text-white">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    /*when users selects an option for builiding element
+      makes get request to different route depending of value chosen
+    */
+    function getUnrankedReports() {
+        
+        $.ajax({
+            url: '/getAllRankedReports/',
+            type: 'GET',
+            success: function (data) {
+                console.log(data)
+                console.log("Number of Reports: " + data.length)
+                //3 variables for each col of bootstrap grid
+                var postsL = "";
+                var postsM = "";
+                var postsR = "";
+                for (var i = 0; i < data.length; i++) {
+
+                    /*Creates a string of HTML,CSS and data on each Report
+                    Assigns it to a temporary variable and reassigns for each Report
+                    */
+                    posts = " <div class='row'><div class='col-sm-6'>"
+                        + "<img src= '/" + data[i].image_file_name +
+                         "' style='width: 80%; height:  100%;'></div><div class='col-sm-6'>" +
+                        "<p>" + data[i].description + "</p>" + "<p>Building: " +
+                        data[i].building + "</p>" + "<p>RoomNo:" + data[i].room_number + "</p>"
+                        + "<button  name='-1 " +
+                         data[i]._id + "' '>-1</button> "  //false 
+                         + " <button  name='1 " +
+                         data[i]._id + "' '>1</button> "     //noturgent
+                         + " <button  name='2 " +
+                         data[i]._id + "' '>2</button> "     //Urgent
+                        + "</p></div></div><br>";
+
+                    //Ensures even distribution of Reports across 3 columns
+                    if ((i + 1) % 3 == 0) {
+                        postsR += posts;
+                    } else if ((i + 1) % 2 == 0) {
+                        postsM += posts;
+                    } else {
+                        postsL += posts;
+                    }
+
+                }
+                //Replace inner HTMl, each element represents a col in grid.
+                $("#SimilarReportsR").html(postsR);
+                $("#SimilarReportsM").html(postsM);
+                $("#SimilarReportsL").html(postsL);
+
+            }
+        });
+    }
+
+
+
+    /*Sends put request, which adds 1 to the votes field of Report 
+    *when vote button is pressed
+    */
+    $("#SimilarReports").click(function (event) {
+        var targetArray = event.target.name.split(" ");
+        console.log(event.target.name);
+        
+            $.ajax({
+                url: '/changeRating/' + targetArray[0]+"&"+targetArray[1],
+                type: 'PUT',
+                success: function (result) {
+                    alert("Thanks for voting!, Redirecting to homePage..");
+                }
+            });
+        
+    });
+
+    $("#addField").click(function (event) {
+        
+        console.log(event.target.name);
+    
+            console.log("success");
+            getUnrankedReports();
+
+        
+    });
+
+
+</script>
