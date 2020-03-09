@@ -13,5 +13,8 @@ var reportsSchema = new Schema({
     date_created : {type: Date, default: new Date()},
     votes: {type: Number, default : 0},
     status : {type: Boolean, default : true},
+    urgency_rating : {type: Number, default : 0},
+    classifier_suggested_rating : {type : Number, default : 0},
+
 });
 module.exports = mongoose.model('Report',reportsSchema);

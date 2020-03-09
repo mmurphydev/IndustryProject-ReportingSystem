@@ -1,8 +1,13 @@
 var express = require('express');
 var router = express.Router();
-var validator = require('validator'); 
+var validator = require('validator');
 var Report = require('../models/reports'); //import reports model using relative path
-var multer = require('multer'); 
+var multer = require('multer');
+
+
+var natural = require('natural');
+var classifier = new natural.LogisticRegressionClassifier();
+
 
 //storage strategy 
 var storage = multer.diskStorage({
@@ -22,7 +27,7 @@ var fileFilter = (req, file, cb) => {
     res.send("incorrect mimetype");
     cb(null, false); //ignores file and doesnt save it
   };
-  
+
 };
 
 //executes multer passig a configuration 
@@ -52,6 +57,11 @@ router.get('/feed', function (req, res, next) {
 /* GET Closed Feed page. */
 router.get('/feedClosed', function (req, res, next) {
   res.render('feedClosed');
+});
+
+/* GET feed page. */
+router.get('/UrgentReports', function (req, res, next) {
+  res.render('feedUrgent');
 });
 
 
@@ -106,6 +116,7 @@ router.put('/upVote/:id', function (req, res, next) {
 * and the name of the field that will hold the file to be parsed
 */
 
+
 router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next) {
   console.log("Add report called");
   console.log(req.body);
@@ -118,7 +129,13 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
   }else{
   filePath=req.file.path;
   }
- 
+
+  
+  //load classifier
+  natural.LogisticRegressionClassifier.load('classifier.json', null, function(err, classifier) {
+    console.log("Classfier value of new report!! "+classifier.classify(req.body.description));
+
+
   //create new report with values from body
   report = new Report({
     description: req.body.description,
@@ -127,8 +144,15 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
     // longitude: req.body.longitude,
     // latitude: req.body.latitude,
     image_file_name: filePath,
+    classifier_suggested_rating: classifier.classify(req.body.description),
+
+    
+
+
   
   });
+
+
   /*Report is saved if description & room_number contains Alphanumeric characters only 
   *  .replace argument removes all spaces from string before passing it to isAlphanumeric method.
   *     otherwise isAlphanumeric() would return false for any filed with spaces.
@@ -140,6 +164,7 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
         
         throw err;
       console.log("Report Sucessfully Saved");
+      console.log(savedReport);
       // res.json({ //Send response with saved details (for testing/debugging)
       //   "id": savedReport._id,
       //   "building": savedReport.building,
@@ -150,12 +175,16 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
       //   "file name ": savedReport.image_file_name
       // });
 
-      res.send("Report for '"+ savedReport.building+ "', Room: '"+ savedReport.room_number+"' saved.")
+      res.send("Report for '"+ savedReport.building+ "', Room: '"+ savedReport.room_number +"' "
+      +" Automated Urgency Rating: "+savedReport.classifier_suggested_rating +"saved.");
+            
     });
+       
   }else {
     console.log("Error: validator issue!")
       res.send("Error : Only letters and Numbers allowed"); 
   }
+});
 });
 
 
@@ -176,8 +205,8 @@ router.get('/getTodaysReports', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
     });
@@ -202,15 +231,15 @@ router.get('/getWeeklyReports', function (req, res, next) {
     function (err, reports) {
       if (err)
         res.send(err);
-       
-      //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
-        return a.date_created - b.date_created; //oldest first
-      return b.votes - a.votes; //Highest votes first
-    });
 
-    res.json(reports);
+      //takes js array (reports) and sorts it by votes, then date
+      reports.sort(function (a, b) {
+        if ((a.votes - b.votes) == 0)
+          return a.date_created - b.date_created; //oldest first
+        return b.votes - a.votes; //Highest votes first
+      });
+
+      res.json(reports);
     });
 });
 
@@ -226,11 +255,11 @@ router.get('/getOlderReports', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -256,8 +285,8 @@ router.get('/getTodaysClosedReports', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
     });
@@ -281,13 +310,13 @@ router.get('/getWeeklyClosedReports', function (req, res, next) {
     function (err, reports) {
       if (err)
         res.send(err);
-       
+
       //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
-        return a.date_created - b.date_created; //oldest first
-      return b.votes - a.votes; //Highest votes first
-    });
+      reports.sort(function (a, b) {
+        if ((a.votes - b.votes) == 0)
+          return a.date_created - b.date_created; //oldest first
+        return b.votes - a.votes; //Highest votes first
+      });
       res.json(reports);
     });
 });
@@ -297,19 +326,20 @@ router.get('/getWeeklyClosedReports', function (req, res, next) {
 router.get('/getOlderClosedReports', function (req, res, next) {
   Report.find({
     $and: [{
-    "date_created":
-    {//this is returning everything >7days old
-      $lte: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000))
-    },},{ "status": { $eq: false } }]
+      "date_created":
+      {//this is returning everything >7days old
+        $lte: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000))
+      },
+    }, { "status": { $eq: false } }]
   }, function (err, reports) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -355,11 +385,11 @@ router.get('/getAllOpenReportsIT', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -381,11 +411,11 @@ router.get('/getAllOpenReportsConcourse', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -407,11 +437,11 @@ router.get('/getAllOpenReportsMoffetts', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -433,11 +463,11 @@ router.get('/getAllOpenReportsOrbsen', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -453,11 +483,103 @@ router.get('/feedOpenOrbsen', function (req, res, next) {
 
 
 
-router.get('/EnterReportRatings', function (req, res, next) {
-  res.render('ManualReporting');
+/* Change urgency_rating, put request*/
+router.put('/changeRating/:rating&:id', function (req, res, next) {
+  var id = req.params.id;
+  var rating = req.params.rating;
+  Report.updateOne({ _id: id }, { urgency_rating: rating }, function (err) {
+    if (err)
+      res.send(err);
+    
+    //res.json({ status: "Ranking Changed!" });
+  });
 });
 
-/*Get Open Reports  <24hours old, for IT building*/
+
+router.get('/EnterReportRatings', function (req, res, next) {
+  res.render('ManualRanking');
+});
+
+
+router.get('/getAllUnrankedReportsOnce', function (req, res, next) {
+  console.log("called correct api");
+  Report.find(
+    {}, function (err, reports) {
+      if (err) {
+        res.send(err);
+      }
+      else {
+        console.log("found all docs, count: "+reports.length);
+        for (i = 0; i < reports.length; i++) {
+          var id = reports[i]._id
+          console.log("got id ok!");
+          Report.updateOne({ _id: id }, { urgency_rating: 0 }, function (err) {
+            if (err)
+              res.send(err);
+          });
+        }
+        console.log("sucessfully updated all!!");
+        res.json(reports);
+      }
+    });
+});
+
+
+
+/*Get All Ranked Reports and use the description and rating of 80% of reports to train the clasifier.
+ User the remaining 20% to test the classifiers accuracy 
+ returns the classifiers accuracy as a response*/
+
+/*Get all ranked reports */
+router.get('/getAllRankedReports', function (req, res, next) {
+  console.log("got this far!!");
+  Report.find(
+    { "urgency_rating": { $ne: 0 } }, function (err, reports) {
+      if (err){
+        res.send(err);
+      }else {
+        console.log("got all reports: "+ reports.length);
+  
+      //Split data in training (80%) and Testing data(20%).
+      trainingData = reports.length*0.80;
+      testingData = reports.length-trainingData;
+      
+        console.log("data split sucessfully");
+       //pass through NLP library? 
+      for (i=0;i<trainingData;i++){
+        classifier.addDocument(reports[i].description, reports[i].urgency_rating);
+        console.log(reports[i].description+" :"+" "+ reports[i].urgency_rating);
+      }
+
+      classifier.train();  //Train classifier
+      console.log("classifier trained");
+
+      classifier.save('classifier.json', function(err, classifier) {
+        // the classifier is saved to the classifier.json file!
+    });
+
+     var accuracy=0;
+     var correct=0;
+     
+      for (i=reports.length-1;i>trainingData;i--){
+        predicted = classifier.classify(reports[i].description);
+        actual = reports[i].urgency_rating;
+        
+        console.log( "Predicted: "+ predicted+", Actual: " +actual+"\n Description: "+ reports[i].description);
+        console.log("value of comparasion: " + (predicted==actual));
+        if(predicted==actual){
+          correct+=1;
+        } 
+      }
+      console.log("correct"+ correct +", testingDataCount" +Math.floor( testingData));
+      accuracy= correct/ Math.floor( testingData); //rounds down testingData to nearest int
+      res.json(accuracy);
+      }
+    });
+});
+
+
+/*Get all unranked reports*/
 router.get('/getAllUnrankedReports', function (req, res, next) {
   Report.find( 
         { "urgency_rating": { $eq: 0 } }, function (err, reports) {
@@ -468,7 +590,21 @@ router.get('/getAllUnrankedReports', function (req, res, next) {
 });
 
 
-
-
+router.get('/getAllUrgentReports', function (req, res, next) {
+  Report.find({
+    $and: [{ "classifier_suggested_rating": { $eq: 2 } }, { "status": { $eq: true } }
+    ]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date 
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });
+    res.json(reports);
+  });
+});
 
 module.exports = router;

@@ -27,6 +27,8 @@
         </div>
 
         <a href="/feedClosed">Closed Reports</a>
+         <a href="/EnterReportRatings">Train Classifier</a>
+          <a href="/UrgentReports">Urgent</a>
 
         
     </div>
@@ -70,11 +72,12 @@
     <script>
 
       $("#posts").click(function (event) {
-        if (event.target.name=="img"){
+        if (event.target.id=="img"){
+          console.log("In the right thing!!");
         var targetArray = event.target.name
         console.log(targetArray);
 
-        var innerImage = "<img src= '" + event.target.src + "' style='width: 80%; height: 80%'>"
+        var innerImage = "<img src= '" + event.target.name + "' style='width: 80%; height: 80%'>"
 
         //var innerImage= "<h1>"+event.target.src+"</h1>";
         $("#innerimage").html(innerImage);

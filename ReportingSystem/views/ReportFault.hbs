@@ -26,6 +26,11 @@
   <input type="button" id="submitReport" class="btn btn-primary" value="Submit Report">
   <br>
 
+<div class="row">
+  <div class="col">
+    <h1 class="display-6">Similar reports will appear when building is choosen</h1>
+  </div>
+</div>
 
   <div class="row" id="SimilarReports">
     <div class="col-md-4 text-white bg-dark" >
@@ -53,7 +58,7 @@
       $("#building").change(function () {
         var selectedBulding = $('#building').children("option:selected").val();
 
-        $.ajax({
+   $.ajax({
           url: '/getAllOpenReports' + selectedBulding + '/',
           type: 'GET',
           success: function (data) {
