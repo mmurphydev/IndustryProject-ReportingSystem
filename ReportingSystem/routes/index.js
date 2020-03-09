@@ -357,132 +357,6 @@ router.get('/getOlderClosedReports', function (req, res, next) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* -------Getting Open Reports by building ___________________________________________________________________*/
-
-
-/*Get all OPEN Reports for IT building
-* sorted by votes (desc) then date(oldest first)
-*/
-router.get('/getAllOpenReportsIT', function (req, res, next) {
-  Report.find({
-    $and: [{ "building": { $eq: 'IT' } }, { "status": { $eq: true } }
-    ]
-  }, function (err, reports) {
-    if (err)
-      res.send(err);
-    //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function (a, b) {
-      if ((a.votes - b.votes) == 0)
-        return a.date_created - b.date_created; //oldest first
-      return b.votes - a.votes; //Highest votes first
-    });
-    res.json(reports);
-  });
-});
-
-
-/* GET /feedOpenIT page. */
-router.get('/feedOpenIT', function (req, res, next) {
-  res.render('OpenBuildingFeed/feedOpenIT');
-});
-
-/*Get all OPEN Reports for Concourse building
-* sorted by votes (desc) then date(oldest first)
-*/
-router.get('/getAllOpenReportsConcourse', function (req, res, next) {
-  Report.find({
-    $and: [{ "building": { $eq: 'Concourse' } }, { "status": { $eq: true } }
-    ]
-  }, function (err, reports) {
-    if (err)
-      res.send(err);
-    //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function (a, b) {
-      if ((a.votes - b.votes) == 0)
-        return a.date_created - b.date_created; //oldest first
-      return b.votes - a.votes; //Highest votes first
-    });
-    res.json(reports);
-  });
-});
-
-/* GET /feedOpenMoffetts page. */
-router.get('/feedOpenConcourse', function (req, res, next) {
-  res.render('OpenBuildingFeed/FeedOpenConcourse');
-});
-
-
-/*Get all OPEN Reports for Moffetts building
-* sorted by votes (desc) then date(oldest first)
-*/
-router.get('/getAllOpenReportsMoffetts', function (req, res, next) {
-  Report.find({
-    $and: [{ "building": { $eq: 'Moffetts' } }, { "status": { $eq: true } }
-    ]
-  }, function (err, reports) {
-    if (err)
-      res.send(err);
-    //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function (a, b) {
-      if ((a.votes - b.votes) == 0)
-        return a.date_created - b.date_created; //oldest first
-      return b.votes - a.votes; //Highest votes first
-    });
-    res.json(reports);
-  });
-});
-
-/* GET /feedOpenMoffetts page. */
-router.get('/feedOpenMoffetts', function (req, res, next) {
-  res.render('OpenBuildingFeed/FeedOpenMoffetts');
-});
-
-
-/*Get all OPEN Reports for Orbsen building
-* sorted by votes (desc) then date(oldest first)
-*/
-router.get('/getAllOpenReportsOrbsen', function (req, res, next) {
-  Report.find({
-    $and: [{ "building": { $eq: 'Orbsen' } }, { "status": { $eq: true } }
-    ]
-  }, function (err, reports) {
-    if (err)
-      res.send(err);
-    //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function (a, b) {
-      if ((a.votes - b.votes) == 0)
-        return a.date_created - b.date_created; //oldest first
-      return b.votes - a.votes; //Highest votes first
-    });
-    res.json(reports);
-  });
-});
-
-/* GET /feedOpenMoffetts page. */
-router.get('/feedOpenOrbsen', function (req, res, next) {
-  res.render('OpenBuildingFeed/FeedOpenOrbsen');
-});
-
-
-
-/*End of Get all open Reopts by building*/
-
-
-
 /* Change urgency_rating, put request*/
 router.put('/changeRating/:rating&:id', function (req, res, next) {
   var id = req.params.id;
@@ -606,5 +480,33 @@ router.get('/getAllUrgentReports', function (req, res, next) {
     res.json(reports);
   });
 });
+
+
+router.put('/selectBuilding/:id', function (req, res, next) {
+  var id = req.params.id;
+  Report.find({
+    $and: [{ "building": { $eq: id } }, { "status": { $eq: true } }
+    ]
+  }, function (err, reports) {
+    if (err)
+      res.send(err);
+    //takes js array (reports) and sorts it by votes, then date 
+    reports.sort(function(a, b) {
+      if((a.votes-b.votes)==0)
+        return a.date_created - b.date_created; //oldest first
+      return b.votes - a.votes; //Highest votes first
+    });  
+    res.json(reports);
+  });
+});
+
+
+
+/* GET home page. */
+router.get('/buildingFeed', function (req, res, next) {
+  res.render('OpenBuilding', { title: 'Express' });
+});
+
+
 
 module.exports = router;

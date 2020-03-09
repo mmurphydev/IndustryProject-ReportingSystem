@@ -13,18 +13,7 @@
         <a href="/feed">Main Feed</a>
         <a href="/Report">Add Report</a>
         <!--DropDown with links to Feed of Open Reports Sorted by building-->
-        <div class="dropdownw">
-            <button class="dropbtnw">Open Building Reports
-                <i class="fa fa-caret-down"></i>
-            </button>
-
-            <div class="dropdown-contentw">
-                <a href="/feedOpenIT">IT</a>
-                <a href="/feedOpenMoffetts">Moffetts</a>
-                <a href="/feedOpenOrbsen">Orbsen</a>
-                <a href="/feedOpenConcourse">Concourse</a>
-            </div>
-        </div>
+        <a href="/buildingFeed">View Building</a>
 
         <a href="/feedClosed">Closed Reports</a>
          <a href="/EnterReportRatings">Train Classifier</a>
@@ -66,17 +55,14 @@
       </div>
     </form>
 </div>
-
-
     <script>
-
-      $("#posts").click(function (event) {
-        if (event.target.id=="img"){
+      $("#SimilarReports").click(function (event) {
+        if (event.target.name=="img"){
           console.log("In the right thing!!");
         var targetArray = event.target.name
         console.log(targetArray);
 
-        var innerImage = "<img src= '" + event.target.name + "' style='width: 80%; height: 80%'>"
+        var innerImage = "<img src= '" + event.target.src + "' style='width: 80%; height: 80%'>"
 
         //var innerImage= "<h1>"+event.target.src+"</h1>";
         $("#innerimage").html(innerImage);
