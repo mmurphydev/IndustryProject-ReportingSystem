@@ -1,8 +1,13 @@
 var express = require('express');
 var router = express.Router();
-var validator = require('validator'); 
+var validator = require('validator');
 var Report = require('../models/reports'); //import reports model using relative path
-var multer = require('multer'); 
+var multer = require('multer');
+
+
+var natural = require('natural');
+var classifier = new natural.LogisticRegressionClassifier();
+
 
 //storage strategy 
 var storage = multer.diskStorage({
@@ -22,7 +27,7 @@ var fileFilter = (req, file, cb) => {
     res.send("incorrect mimetype");
     cb(null, false); //ignores file and doesnt save it
   };
-  
+
 };
 
 //executes multer passig a configuration 
@@ -112,13 +117,13 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
   var filePath;
 
   //If no image upload save path as path to default image, otherwise save image path to DB
-  if (req.body.ImageUpload=='undefined'){
-    filePath= "images/noImage.jpg";
-    
-  }else{
-  filePath=req.file.path;
+  if (req.body.ImageUpload == 'undefined') {
+    filePath = "images/noImage.jpg";
+
+  } else {
+    filePath = req.file.path;
   }
- 
+
   //create new report with values from body
   report = new Report({
     description: req.body.description,
@@ -127,17 +132,16 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
     // longitude: req.body.longitude,
     // latitude: req.body.latitude,
     image_file_name: filePath,
-  
+
   });
   /*Report is saved if description & room_number contains Alphanumeric characters only 
   *  .replace argument removes all spaces from string before passing it to isAlphanumeric method.
   *     otherwise isAlphanumeric() would return false for any filed with spaces.
   */
-  if ((validator.isAlphanumeric(req.body.description.replace(/\s+/g,''))) && (validator.isAlphanumeric(req.body.room_number.replace(/\s+/g,''))))
-  {   
+  if ((validator.isAlphanumeric(req.body.description.replace(/\s+/g, ''))) && (validator.isAlphanumeric(req.body.room_number.replace(/\s+/g, '')))) {
     report.save(function (err, savedReport) {
       if (err)
-        
+
         throw err;
       console.log("Report Sucessfully Saved");
       // res.json({ //Send response with saved details (for testing/debugging)
@@ -150,11 +154,11 @@ router.post('/AddReport', upload.single('ImageUpload'), function (req, res, next
       //   "file name ": savedReport.image_file_name
       // });
 
-      res.send("Report for '"+ savedReport.building+ "', Room: '"+ savedReport.room_number+"' saved.")
+      res.send("Report for '" + savedReport.building + "', Room: '" + savedReport.room_number + "' saved.")
     });
-  }else {
+  } else {
     console.log("Error: validator issue!")
-      res.send("Error : Only letters and Numbers allowed"); 
+    res.send("Error : Only letters and Numbers allowed");
   }
 });
 
@@ -176,8 +180,8 @@ router.get('/getTodaysReports', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
     });
@@ -202,15 +206,15 @@ router.get('/getWeeklyReports', function (req, res, next) {
     function (err, reports) {
       if (err)
         res.send(err);
-       
-      //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
-        return a.date_created - b.date_created; //oldest first
-      return b.votes - a.votes; //Highest votes first
-    });
 
-    res.json(reports);
+      //takes js array (reports) and sorts it by votes, then date
+      reports.sort(function (a, b) {
+        if ((a.votes - b.votes) == 0)
+          return a.date_created - b.date_created; //oldest first
+        return b.votes - a.votes; //Highest votes first
+      });
+
+      res.json(reports);
     });
 });
 
@@ -226,11 +230,11 @@ router.get('/getOlderReports', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -256,8 +260,8 @@ router.get('/getTodaysClosedReports', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
     });
@@ -281,13 +285,13 @@ router.get('/getWeeklyClosedReports', function (req, res, next) {
     function (err, reports) {
       if (err)
         res.send(err);
-       
+
       //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
-        return a.date_created - b.date_created; //oldest first
-      return b.votes - a.votes; //Highest votes first
-    });
+      reports.sort(function (a, b) {
+        if ((a.votes - b.votes) == 0)
+          return a.date_created - b.date_created; //oldest first
+        return b.votes - a.votes; //Highest votes first
+      });
       res.json(reports);
     });
 });
@@ -297,19 +301,20 @@ router.get('/getWeeklyClosedReports', function (req, res, next) {
 router.get('/getOlderClosedReports', function (req, res, next) {
   Report.find({
     $and: [{
-    "date_created":
-    {//this is returning everything >7days old
-      $lte: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000))
-    },},{ "status": { $eq: false } }]
+      "date_created":
+      {//this is returning everything >7days old
+        $lte: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000))
+      },
+    }, { "status": { $eq: false } }]
   }, function (err, reports) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -355,11 +360,11 @@ router.get('/getAllOpenReportsIT', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -381,11 +386,11 @@ router.get('/getAllOpenReportsConcourse', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -407,11 +412,11 @@ router.get('/getAllOpenReportsMoffetts', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -433,11 +438,11 @@ router.get('/getAllOpenReportsOrbsen', function (req, res, next) {
     if (err)
       res.send(err);
     //takes js array (reports) and sorts it by votes, then date 
-    reports.sort(function(a, b) {
-      if((a.votes-b.votes)==0)
+    reports.sort(function (a, b) {
+      if ((a.votes - b.votes) == 0)
         return a.date_created - b.date_created; //oldest first
       return b.votes - a.votes; //Highest votes first
-    });  
+    });
     res.json(reports);
   });
 });
@@ -453,20 +458,54 @@ router.get('/feedOpenOrbsen', function (req, res, next) {
 
 
 
-router.get('/EnterReportRatings', function (req, res, next) {
-  res.render('ManualReporting');
-});
-
-/*Get Open Reports  <24hours old, for IT building*/
-router.get('/getAllUnrankedReports', function (req, res, next) {
-  Report.find( 
-        { "urgency_rating": { $eq: 0 } }, function (err, reports) {
+/* Change Status to fasle, put request*/
+router.put('/changeRating/:rating&:id', function (req, res, next) {
+  var id = req.params.id;
+  var rating = req.params.rating;
+  Report.updateOne({ _id: id }, { urgency_rating: rating }, function (err) {
     if (err)
       res.send(err);
-    res.json(reports);
+    res.json({ status: "Report Status Changed!" });
   });
 });
 
+
+
+/*Get all unranked reports*/
+router.get('/getAllUnrankedReports', function (req, res, next) {
+  Report.find(
+    { "urgency_rating": { $eq: 0 } }, function (err, reports) {
+      if (err)
+        res.send(err);
+
+      res.json(reports);
+    });
+});
+
+
+
+router.get('/getAllUnrankedReportsOnce', function (req, res, next) {
+  console.log("called correct api");
+  Report.find(
+    {}, function (err, reports) {
+      if (err) {
+        res.send(err);
+      }
+      else {
+        console.log("found all docs, count: "+reports.length);
+        for (i = 0; i < reports.length; i++) {
+          var id = reports[i]._id
+          console.log("got id ok!");
+          Report.updateOne({ _id: id }, { urgency_rating: 0 }, function (err) {
+            if (err)
+              res.send(err);
+          });
+        }
+        console.log("sucessfully updated all!!");
+        res.json(reports);
+      }
+    });
+});
 
 
 
